@@ -45,12 +45,12 @@ export const AuthProvider = ({ children }) => {
       id: `usr-${Date.now()}`,
       name: userData.name,
       email: userData.email,
-      phone: userData.phone || "+1 (555) 000-0000",
-      role: "user",
+      phone: userData.phone || "+91 98765 00000",
+      role: userData.role || "user",
       avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80",
       memberSince: "Aug 2026",
       totalBookings: 0,
-      vehiclePlate: userData.vehiclePlate || "NY-9900-Z",
+      vehiclePlate: userData.vehiclePlate || "DL-01-AB-1234",
       status: "Active"
     };
     setCurrentUser(newUser);

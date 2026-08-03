@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Car, Mail, Lock, LogIn, Sparkles, Shield, User } from 'lucide-react';
+import { Car, Mail, Lock, LogIn } from 'lucide-react';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import Card from '../../components/Card';
@@ -9,11 +9,11 @@ import { useToast } from '../../context/ToastContext';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login, switchRole } = useAuth();
+  const { login } = useAuth();
   const { addToast } = useToast();
 
-  const [email, setEmail] = useState('alex.morgan@parkease.in');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e) => {
@@ -29,17 +29,6 @@ const LoginPage = () => {
         navigate('/user/dashboard');
       }
     }, 500);
-  };
-
-  const quickLoginAs = (role) => {
-    switchRole(role);
-    if (role === 'admin') {
-      addToast('Signed in as Admin (Rajesh Kumar)', 'success');
-      navigate('/admin');
-    } else {
-      addToast('Signed in as User (Alex Morgan)', 'success');
-      navigate('/user/dashboard');
-    }
   };
 
   return (
@@ -78,7 +67,7 @@ const LoginPage = () => {
               label="Email Address"
               type="email"
               icon={Mail}
-              placeholder="alex.morgan@parkease.in"
+              placeholder="enter your email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -106,21 +95,6 @@ const LoginPage = () => {
               Sign In
             </Button>
           </form>
-
-          {/* Quick Demo Login Presets */}
-          <div style={{ marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border)' }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textAlign: 'center', marginBottom: '0.75rem', textTransform: 'uppercase' }}>
-              Quick Demo Login Presets
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-              <Button variant="secondary" size="sm" icon={User} onClick={() => quickLoginAs('user')}>
-                Demo Driver
-              </Button>
-              <Button variant="secondary" size="sm" icon={Shield} onClick={() => quickLoginAs('admin')}>
-                Demo Admin
-              </Button>
-            </div>
-          </div>
         </Card>
 
         <p style={{ textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '1.5rem' }}>
