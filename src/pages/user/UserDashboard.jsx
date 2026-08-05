@@ -11,9 +11,15 @@ import {
   ArrowRight,
   ShieldCheck,
   CheckCircle,
-  AlertCircle
+  TrendingUp,
+  Heart,
+  Search,
+  UserCheck,
+  Headphones,
+  Check,
+  X,
+  FileText
 } from 'lucide-react';
-import StatisticsCard from '../../components/StatisticsCard';
 import Card from '../../components/Card';
 import Button from '../../components/Button';
 import StatusBadge from '../../components/StatusBadge';
@@ -32,11 +38,10 @@ const UserDashboard = () => {
   const [extendModalBooking, setExtendModalBooking] = useState(null);
   const [extraHours, setExtraHours] = useState(1);
 
-  // Active / Upcoming Bookings
+  // Active & Upcoming Bookings
   const activeBooking = bookings.find(b => b.status === 'active');
   const upcomingBookings = bookings.filter(b => b.status === 'upcoming');
-  const pastBookings = bookings.filter(b => b.status === 'completed' || b.status === 'cancelled');
-
+  
   const totalSpent = bookings
     .filter(b => b.status !== 'cancelled')
     .reduce((acc, b) => acc + b.totalAmount, 0);
@@ -55,223 +60,251 @@ const UserDashboard = () => {
   };
 
   return (
-    <div className="user-dashboard animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      {/* Top Banner Greeting */}
+    <div className="user-dashboard animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+      
+      {/* Top Banner Greeting Header */}
       <div style={{
         display: 'flex',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
         alignItems: 'center',
         gap: '1rem',
-        backgroundColor: 'var(--card-bg)',
-        padding: '1.5rem 1.75rem',
-        borderRadius: 'var(--radius-lg)',
+        backgroundColor: '#FFFFFF',
+        padding: '1.75rem 2rem',
+        borderRadius: '20px',
         border: '1px solid var(--border)',
         boxShadow: 'var(--shadow-sm)'
       }}>
         <div>
-          <h1 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--text)' }}>
-            Welcome back, {currentUser?.name || 'Driver'} 👋
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text)' }}>
+            Dashboard
           </h1>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
-            Registered Vehicle: <strong style={{ color: 'var(--text)' }}>{currentUser?.vehiclePlate || 'DL-01-AB-1234'}</strong> • ANPR Gate Active
+          <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
+            <strong>Good Morning, {currentUser?.name || 'Mahadev'}! 👋</strong> Here's what's happening with your parking today.
           </p>
         </div>
 
         <Link to="/parking">
-          <Button variant="primary" size="md" icon={PlusCircle}>
-            Book New Parking
+          <Button variant="primary" size="md" style={{ borderRadius: '10px', backgroundColor: '#2563EB', padding: '0.65rem 1.4rem' }}>
+            + Book New Parking
           </Button>
         </Link>
       </div>
 
-      {/* KPI Cards Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
-        <StatisticsCard
-          title="Total Bookings"
-          value={bookings.length}
-          change="+3 this month"
-          changeType="positive"
-          icon={Car}
-          iconBg="var(--primary-light)"
-          iconColor="var(--primary)"
-        />
-        <StatisticsCard
-          title="Active Session"
-          value={activeBooking ? activeBooking.slotId : 'None'}
-          change={activeBooking ? 'Occupied' : 'No active session'}
-          changeType={activeBooking ? 'positive' : 'neutral'}
-          icon={Clock}
-          iconBg={activeBooking ? 'var(--success-light)' : 'var(--bg)'}
-          iconColor={activeBooking ? 'var(--success)' : 'var(--text-secondary)'}
-        />
-        <StatisticsCard
-          title="Total Spent"
-          value={formatCurrency(totalSpent)}
-          change="Updated live"
-          changeType="neutral"
-          icon={CreditCard}
-          iconBg="var(--warning-light)"
-          iconColor="var(--warning)"
-        />
-        <StatisticsCard
-          title="Nearby Parking Hubs"
-          value={locations.length}
-          change="Available now"
-          changeType="positive"
-          icon={MapPin}
-          iconBg="var(--primary-light)"
-          iconColor="var(--primary)"
-        />
+      {/* 4 Stat Cards Row */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
+        
+        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.25rem', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Total Bookings</div>
+          <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text)', margin: '0.2rem 0' }}>24</div>
+          <div style={{ fontSize: '0.78rem', color: '#10B981', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <TrendingUp size={14} /> 12% this month
+          </div>
+        </div>
+
+        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.25rem', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Active Bookings</div>
+          <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text)', margin: '0.2rem 0' }}>2</div>
+          <div style={{ fontSize: '0.78rem', color: '#10B981', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+            <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#10B981' }}></span> Currently active
+          </div>
+        </div>
+
+        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.25rem', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Total Spent</div>
+          <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text)', margin: '0.2rem 0' }}>₹2,450</div>
+          <div style={{ fontSize: '0.78rem', color: '#10B981', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <TrendingUp size={14} /> 8% this month
+          </div>
+        </div>
+
+        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.25rem', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Saved Locations</div>
+          <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text)', margin: '0.2rem 0' }}>6</div>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <Heart size={13} color="#EF4444" fill="#EF4444" /> Your favorites
+          </div>
+        </div>
+
       </div>
 
-      {/* Active Booking Banner */}
-      {activeBooking && (
-        <Card padding="lg" style={{ borderLeft: '6px solid var(--success)', backgroundColor: 'var(--card-bg)' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1.5rem' }}>
-            <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'flex-start' }}>
-              <div style={{
-                width: '52px',
-                height: '52px',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: 'var(--success-light)',
-                color: 'var(--success)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0
-              }}>
-                <ShieldCheck size={28} />
+      {/* Grid: Upcoming Booking & Recent Activity */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem' }}>
+        
+        {/* Upcoming Booking Card */}
+        <div style={{ border: '1px solid var(--border)', borderRadius: '20px', padding: '1.5rem', backgroundColor: '#FFFFFF', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text)' }}>Upcoming Booking</h3>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, backgroundColor: '#ECFDF5', color: '#059669', padding: '0.25rem 0.65rem', borderRadius: '9999px' }}>
+              ✓ Confirmed
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', padding: '1rem', backgroundColor: 'var(--bg)', borderRadius: '14px', border: '1px solid var(--border)', marginBottom: '1.25rem' }}>
+            <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Car size={24} />
+            </div>
+            <div>
+              <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text)' }}>Connaught Place Central Deck</h4>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.1rem' }}>Slot A12 • DL-01-AB-1234</p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem', fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Calendar size={16} color="#2563EB" /> 10 Aug 2026
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Clock size={16} color="#2563EB" /> 10:00 AM - 01:00 PM (3 hrs)
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1.25rem', borderTop: '1px solid var(--border)' }}>
+            <div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Total Amount</span>
+              <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text)' }}>₹240.00</div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.65rem' }}>
+              <Button variant="outline" size="sm" style={{ borderRadius: '8px' }}>
+                View Details
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setQrModalBooking(upcomingBookings[0] || activeBooking || { bookingCode: 'PARK-CP-8842', slotId: 'A12', locationName: 'Connaught Place Central Deck', vehicleNumber: 'DL-01-AB-1234' })}
+                style={{ borderRadius: '8px', backgroundColor: '#EFF6FF', color: '#2563EB', border: '1px solid #BFDBFE' }}
+              >
+                Get Pass (QR)
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Activity Card */}
+        <div style={{ border: '1px solid var(--border)', borderRadius: '20px', padding: '1.5rem', backgroundColor: '#FFFFFF', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text)' }}>Recent Activity</h3>
+            <Link to="/user/bookings" style={{ fontSize: '0.85rem', color: '#2563EB', fontWeight: 600 }}>View All</Link>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#ECFDF5', color: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                <Check size={18} />
               </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '0.925rem', fontWeight: 700, color: 'var(--text)' }}>Booking Confirmed</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Connaught Place • Slot A12</div>
+              </div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Today, 9:30 AM</div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#ECFDF5', color: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                ₹
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '0.925rem', fontWeight: 700, color: 'var(--text)' }}>Payment Successful</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>₹240.00 Paid successfully</div>
+              </div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Today, 9:30 AM</div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#FEF2F2', color: '#EF4444', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                <X size={18} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '0.925rem', fontWeight: 700, color: 'var(--text)' }}>Booking Cancelled</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>DLF Cyber Hub • Slot B08</div>
+              </div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Yesterday, 6:20 PM</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      {/* Quick Actions Component Bar */}
+      <div style={{
+        backgroundColor: '#FFFFFF',
+        borderRadius: '20px',
+        border: '1px solid var(--border)',
+        padding: '1.5rem 1.75rem',
+        boxShadow: 'var(--shadow-sm)'
+      }}>
+        <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text)', marginBottom: '1.15rem' }}>Quick Actions</h3>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+          <Link to="/parking" style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.9rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border)', backgroundColor: 'var(--bg)', transition: 'var(--transition)' }}>
+              <Search size={20} color="#2563EB" />
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.25rem' }}>
-                  <StatusBadge status="active">Active Session</StatusBadge>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>Code: {activeBooking.bookingCode}</span>
-                </div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text)' }}>
-                  {activeBooking.locationName} — Slot <span style={{ color: 'var(--primary)' }}>{activeBooking.slotId}</span>
-                </h3>
-                <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
-                  {activeBooking.address} • Vehicle: {activeBooking.vehicleNumber}
-                </p>
-                <div style={{ display: 'flex', gap: '1rem', marginTop: '0.75rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-                  <span>📅 {formatDate(activeBooking.date)}</span>
-                  <span>⏰ Starts {activeBooking.startTime} ({activeBooking.durationHours} hrs)</span>
-                  <span>💳 Total: {formatCurrency(activeBooking.totalAmount)}</span>
-                </div>
+                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text)' }}>Find Parking</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Search nearby spots</div>
               </div>
             </div>
+          </Link>
 
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <Button variant="secondary" size="sm" icon={QrCode} onClick={() => setQrModalBooking(activeBooking)}>
-                Gate Pass QR
-              </Button>
-              <Button variant="primary" size="sm" onClick={() => setExtendModalBooking(activeBooking)}>
-                Extend Session
-              </Button>
-            </div>
-          </div>
-        </Card>
-      )}
-
-      {/* Main Grid: Upcoming & Recent Activity */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.75rem' }}>
-        {/* Upcoming Bookings */}
-        <Card padding="lg">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text)' }}>Upcoming Reservations</h3>
-            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>{upcomingBookings.length} Scheduled</span>
-          </div>
-
-          {upcomingBookings.length === 0 ? (
-            <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-              No upcoming reservations. <Link to="/parking" style={{ color: 'var(--primary)', fontWeight: 600 }}>Find a spot</Link>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {upcomingBookings.map((b) => (
-                <div key={b.id} style={{
-                  padding: '1rem',
-                  borderRadius: 'var(--radius-md)',
-                  border: '1px solid var(--border)',
-                  backgroundColor: 'var(--bg)',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
-                      <StatusBadge status="upcoming" size="sm">Upcoming</StatusBadge>
-                      <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text)' }}>Slot {b.slotId}</span>
-                    </div>
-                    <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text)' }}>{b.locationName}</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                      {formatDate(b.date)} at {b.startTime} ({b.durationHours}h)
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignItems: 'flex-end' }}>
-                    <span style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--primary)' }}>{formatCurrency(b.totalAmount)}</span>
-                    <Button variant="danger" size="sm" onClick={() => handleCancel(b.id)}>
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </Card>
-
-        {/* Nearby Recommended Locations */}
-        <Card padding="lg">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text)' }}>Recommended Nearby</h3>
-            <Link to="/parking" style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--primary)' }}>View All</Link>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {locations.slice(0, 3).map((loc) => (
-              <div key={loc.id} style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1rem',
-                padding: '0.85rem',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--border)',
-                backgroundColor: 'var(--card-bg)'
-              }}>
-                <img src={loc.image} alt={loc.name} style={{ width: '60px', height: '60px', borderRadius: 'var(--radius-md)', objectFit: 'cover' }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {loc.name}
-                  </div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                    <MapPin size={13} color="var(--primary)" />
-                    {loc.distance} • {loc.availableSlots} slots left
-                  </div>
-                </div>
-                <Link to={`/parking/${loc.id}`}>
-                  <Button variant="outline" size="sm">Book</Button>
-                </Link>
+          <Link to="/user/bookings" style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.9rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border)', backgroundColor: 'var(--bg)', transition: 'var(--transition)' }}>
+              <Calendar size={20} color="#2563EB" />
+              <div>
+                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text)' }}>My Bookings</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>View all bookings</div>
               </div>
-            ))}
-          </div>
-        </Card>
+            </div>
+          </Link>
+
+          <Link to="/user/profile" style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.9rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border)', backgroundColor: 'var(--bg)', transition: 'var(--transition)' }}>
+              <UserCheck size={20} color="#2563EB" />
+              <div>
+                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text)' }}>My Profile</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Manage profile</div>
+              </div>
+            </div>
+          </Link>
+
+          <Link to="/user/settings" style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.9rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border)', backgroundColor: 'var(--bg)', transition: 'var(--transition)' }}>
+              <CreditCard size={20} color="#2563EB" />
+              <div>
+                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text)' }}>Wallet</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Check balance</div>
+              </div>
+            </div>
+          </Link>
+
+          <Link to="/contact" style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.9rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border)', backgroundColor: 'var(--bg)', transition: 'var(--transition)' }}>
+              <Headphones size={20} color="#2563EB" />
+              <div>
+                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text)' }}>Support</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Get help</div>
+              </div>
+            </div>
+          </Link>
+        </div>
       </div>
 
-      {/* QR Code Barrier Pass Modal */}
+      {/* QR Code Pass Modal */}
       <Modal
         isOpen={!!qrModalBooking}
         onClose={() => setQrModalBooking(null)}
         title="Gate Access Pass (ANPR Backup)"
-        description="Scan this QR code at the entrance barrier scanner if camera plate recognition is obstructed."
+        description="Scan this QR code at the entrance barrier scanner if automatic plate recognition camera is obstructed."
       >
         {qrModalBooking && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '1.25rem', padding: '1rem 0' }}>
             <div style={{
               padding: '1.5rem',
               backgroundColor: '#FFFFFF',
-              borderRadius: 'var(--radius-lg)',
-              border: '2px dashed var(--border)',
+              borderRadius: '16px',
+              border: '2px dashed #E2E8F0',
               boxShadow: 'var(--shadow-sm)'
             }}>
               <QrCode size={180} color="#0F172A" />
@@ -279,11 +312,11 @@ const UserDashboard = () => {
 
             <div>
               <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Access Pass Code</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary)', letterSpacing: '0.05em' }}>{qrModalBooking.bookingCode}</div>
-              <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text)', marginTop: '0.5rem' }}>
+              <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#2563EB', letterSpacing: '0.05em' }}>{qrModalBooking.bookingCode}</div>
+              <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text)', marginTop: '0.5rem' }}>
                 Slot {qrModalBooking.slotId} • {qrModalBooking.locationName}
               </div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
                 Vehicle: {qrModalBooking.vehicleNumber}
               </div>
             </div>
@@ -291,57 +324,6 @@ const UserDashboard = () => {
         )}
       </Modal>
 
-      {/* Extend Session Modal */}
-      <Modal
-        isOpen={!!extendModalBooking}
-        onClose={() => setExtendModalBooking(null)}
-        title="Extend Active Parking Session"
-        description="Add additional hours to your active reservation without moving your vehicle."
-        footer={
-          <>
-            <Button variant="secondary" onClick={() => setExtendModalBooking(null)}>Cancel</Button>
-            <Button variant="primary" onClick={handleExtendSubmit}>
-              Confirm Extension ({formatCurrency(extraHours * (extendModalBooking?.totalAmount / extendModalBooking?.durationHours || 80))})
-            </Button>
-          </>
-        }
-      >
-        {extendModalBooking && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <div style={{ padding: '1rem', backgroundColor: 'var(--bg)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
-              <div style={{ fontWeight: 700, color: 'var(--text)' }}>{extendModalBooking.locationName} (Slot {extendModalBooking.slotId})</div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Current Duration: {extendModalBooking.durationHours} hrs</div>
-            </div>
-
-            <div>
-              <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text)', display: 'block', marginBottom: '0.5rem' }}>
-                Select Extension Hours
-              </label>
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
-                {[1, 2, 3, 5].map((h) => (
-                  <button
-                    key={h}
-                    type="button"
-                    onClick={() => setExtraHours(h)}
-                    style={{
-                      flex: 1,
-                      padding: '0.75rem',
-                      borderRadius: 'var(--radius-md)',
-                      border: `2px solid ${extraHours === h ? 'var(--primary)' : 'var(--border)'}`,
-                      backgroundColor: extraHours === h ? 'var(--primary-light)' : 'var(--card-bg)',
-                      color: extraHours === h ? 'var(--primary)' : 'var(--text)',
-                      fontWeight: 700,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    +{h} hr{h > 1 ? 's' : ''}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-      </Modal>
     </div>
   );
 };

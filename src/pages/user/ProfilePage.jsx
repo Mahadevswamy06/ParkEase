@@ -1,5 +1,21 @@
 import React, { useState } from 'react';
-import { User, Mail, Phone, Car, Lock, ShieldCheck, Edit3, Save, MapPin, CreditCard, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
+import {
+  User,
+  Mail,
+  Phone,
+  Car,
+  Lock,
+  ShieldCheck,
+  Edit3,
+  Save,
+  MapPin,
+  Sparkles,
+  Zap,
+  Activity,
+  History,
+  Award
+} from 'lucide-react';
 import Card from '../../components/Card';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
@@ -17,6 +33,7 @@ const ProfilePage = () => {
     phone: currentUser?.phone || '+91 98765 43210',
     vehiclePlate: currentUser?.vehiclePlate || 'DL-01-AB-1234',
     city: currentUser?.city || 'New Delhi',
+    evPreference: true,
     avatar: currentUser?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80'
   });
 
@@ -26,174 +43,234 @@ const ProfilePage = () => {
     e.preventDefault();
     updateProfile(formData);
     setIsEditing(false);
-    addToast('Profile details & vehicle plate updated successfully!', 'success', 'Profile Saved');
+    addToast('Profile & ANPR telemetry updated!', 'success', 'Saved');
   };
 
   const handlePasswordSubmit = (e) => {
     e.preventDefault();
     if (passwords.new !== passwords.confirm) {
-      addToast('New passwords do not match.', 'danger', 'Validation Error');
+      addToast('New passwords do not match.', 'danger');
       return;
     }
-    addToast('Password updated successfully.', 'success', 'Security Updated');
+    addToast('Security password updated.', 'success');
     setPasswords({ current: '', new: '', confirm: '' });
   };
 
   return (
-    <div className="profile-page animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '960px', margin: '0 auto' }}>
-      <div>
-        <h1 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text)' }}>User Profile & Vehicle Pass</h1>
-        <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-          Manage your personal driver profile, registered ANPR license plates, and preferred parking cities.
-        </p>
-      </div>
+    <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '2rem 1.5rem 4rem' }} className="animate-fade-in">
+      
+      {/* Top Cover Banner */}
+      <div style={{
+        position: 'relative',
+        height: '240px',
+        borderRadius: 'var(--radius-xl)',
+        overflow: 'hidden',
+        border: '1px solid rgba(124, 58, 237, 0.3)',
+        boxShadow: 'var(--shadow-lg)',
+        marginBottom: '4rem'
+      }}>
+        <img
+          src="https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1200&q=80"
+          alt="Luxury Automotive Cover"
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(180deg, rgba(5, 8, 22, 0.2) 0%, rgba(5, 8, 22, 0.85) 100%)'
+        }} />
 
-      {/* User Header Profile Card */}
-      <Card padding="lg" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '1.5rem', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+        {/* User Profile Avatar Floating Overlay */}
+        <div style={{
+          position: 'absolute',
+          bottom: '-2.5rem',
+          left: '2.5rem',
+          display: 'flex',
+          alignItems: 'flex-end',
+          gap: '1.5rem'
+        }}>
           <img
             src={formData.avatar}
             alt={formData.name}
-            style={{ width: '84px', height: '84px', borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--primary-border)', boxShadow: 'var(--shadow-sm)' }}
+            style={{
+              width: '110px',
+              height: '110px',
+              borderRadius: '50%',
+              objectFit: 'cover',
+              border: '4px solid var(--bg)',
+              boxShadow: 'var(--shadow-lg)',
+              backgroundColor: 'var(--bg)'
+            }}
           />
-          <div>
-            <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text)' }}>{currentUser?.name || 'Alex Morgan'}</h2>
-            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{currentUser?.email || 'alex.morgan@parkease.in'}</p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, backgroundColor: 'var(--primary-light)', color: 'var(--primary)', padding: '0.25rem 0.65rem', borderRadius: '9999px', border: '1px solid var(--primary-border)' }}>
-                Member since {currentUser?.memberSince || 'Jan 2024'}
-              </span>
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, backgroundColor: 'var(--success-light)', color: 'var(--success)', padding: '0.25rem 0.65rem', borderRadius: '9999px' }}>
-                <ShieldCheck size={12} style={{ verticalAlign: 'middle', marginRight: '3px' }} /> ANPR FastPass Verified
-              </span>
-            </div>
+          <div style={{ marginBottom: '0.5rem' }}>
+            <h1 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#FFFFFF' }}>{formData.name}</h1>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{formData.email}</p>
           </div>
         </div>
 
-        <Button
-          variant={isEditing ? "outline" : "primary"}
-          icon={isEditing ? Save : Edit3}
-          onClick={() => setIsEditing(!isEditing)}
-        >
-          {isEditing ? 'Cancel Edit' : 'Edit Profile'}
-        </Button>
-      </Card>
+        <div style={{
+          position: 'absolute',
+          bottom: '1.5rem',
+          right: '2rem',
+          display: 'flex',
+          gap: '0.75rem'
+        }}>
+          <button
+            onClick={() => setIsEditing(!isEditing)}
+            className="btn-gradient"
+            style={{
+              padding: '0.6rem 1.4rem',
+              borderRadius: '9999px',
+              fontSize: '0.875rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}
+          >
+            <Edit3 size={16} />
+            <span>{isEditing ? 'Cancel Edit' : 'Edit Profile'}</span>
+          </button>
+        </div>
+      </div>
 
-      {/* Main Details Form */}
-      <Card padding="lg">
-        <form onSubmit={handleProfileSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <User size={18} color="var(--primary)" /> Driver & Vehicle Information
-            </h3>
-            {isEditing && <span style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600 }}>Editing Mode Active</span>}
-          </div>
+      {/* Main Profile Grid Sections */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem' }}>
+        
+        {/* Section 1: Personal & Vehicle Info */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <Card padding="lg">
+            <form onSubmit={handleProfileSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
+                <User size={18} color="var(--primary)" /> Personal & Driver Info
+              </h3>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
-            <Input
-              label="Full Name"
-              icon={User}
-              value={formData.name}
-              disabled={!isEditing}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            />
+              <Input
+                label="Full Name"
+                icon={User}
+                value={formData.name}
+                disabled={!isEditing}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              />
 
-            <Input
-              label="Email Address"
-              type="email"
-              icon={Mail}
-              value={formData.email}
-              disabled={!isEditing}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            />
+              <Input
+                label="Email Address"
+                type="email"
+                icon={Mail}
+                value={formData.email}
+                disabled={!isEditing}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              />
 
-            <Input
-              label="Phone Number"
-              icon={Phone}
-              value={formData.phone}
-              disabled={!isEditing}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            />
+              <Input
+                label="Phone Number"
+                icon={Phone}
+                value={formData.phone}
+                disabled={!isEditing}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              />
 
-            <Input
-              label="ANPR Vehicle Registration Plate"
-              icon={Car}
-              value={formData.vehiclePlate}
-              disabled={!isEditing}
-              helperText="Scanned by optical barrier gates (e.g. DL-01-AB-1234)"
-              onChange={(e) => setFormData({ ...formData, vehiclePlate: e.target.value })}
-            />
+              {isEditing && (
+                <Button type="submit" variant="primary" icon={Save}>
+                  Save Information
+                </Button>
+              )}
+            </form>
+          </Card>
+        </motion.div>
 
-            <Input
-              label="Preferred Indian City"
-              icon={MapPin}
-              value={formData.city}
-              disabled={!isEditing}
-              onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            />
+        {/* Section 2: Vehicle & ANPR Gate Pass */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
+          <Card padding="lg">
+            <form onSubmit={handleProfileSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
+                <Car size={18} color="var(--accent)" /> Vehicle & ANPR Pass
+              </h3>
 
-            <Input
-              label="Avatar Image URL"
-              icon={Sparkles}
-              value={formData.avatar}
-              disabled={!isEditing}
-              onChange={(e) => setFormData({ ...formData, avatar: e.target.value })}
-            />
-          </div>
+              <Input
+                label="ANPR Vehicle License Plate"
+                icon={Car}
+                value={formData.vehiclePlate}
+                disabled={!isEditing}
+                helperText="Scanned by optical barrier cameras for automatic gate entry"
+                onChange={(e) => setFormData({ ...formData, vehiclePlate: e.target.value })}
+              />
 
-          {isEditing && (
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
-              <Button type="submit" variant="primary" icon={Save} size="lg">
-                Save Profile Changes
+              <Input
+                label="Preferred Indian Metro"
+                icon={MapPin}
+                value={formData.city}
+                disabled={!isEditing}
+                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+              />
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--bg)', border: '1px solid var(--border)' }}>
+                <Zap size={20} color="var(--warning)" />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text)' }}>EV Fast-Charging Slot Priority</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Automatically reserve spots with active chargers</div>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={formData.evPreference}
+                  disabled={!isEditing}
+                  onChange={(e) => setFormData({ ...formData, evPreference: e.target.checked })}
+                  style={{ accentColor: 'var(--primary)', width: '18px', height: '18px' }}
+                />
+              </div>
+
+              {isEditing && (
+                <Button type="submit" variant="primary" icon={Save}>
+                  Save Vehicle Telemetry
+                </Button>
+              )}
+            </form>
+          </Card>
+        </motion.div>
+
+        {/* Section 3: Security & Password Settings */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
+          <Card padding="lg">
+            <form onSubmit={handlePasswordSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
+                <Lock size={18} color="var(--danger)" /> Security & Password
+              </h3>
+
+              <Input
+                label="Current Password"
+                type="password"
+                icon={Lock}
+                value={passwords.current}
+                onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
+                required
+              />
+
+              <Input
+                label="New Password"
+                type="password"
+                icon={Lock}
+                value={passwords.new}
+                onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
+                required
+              />
+
+              <Input
+                label="Confirm New Password"
+                type="password"
+                icon={Lock}
+                value={passwords.confirm}
+                onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
+                required
+              />
+
+              <Button type="submit" variant="secondary">
+                Update Security Password
               </Button>
-            </div>
-          )}
-        </form>
-      </Card>
+            </form>
+          </Card>
+        </motion.div>
 
-      {/* Security & Password Form */}
-      <Card padding="lg">
-        <form onSubmit={handlePasswordSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
-            <Lock size={18} color="var(--primary)" /> Security & Access Password
-          </h3>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
-            <Input
-              label="Current Password"
-              type="password"
-              icon={Lock}
-              value={passwords.current}
-              onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
-              required
-            />
-
-            <Input
-              label="New Password"
-              type="password"
-              icon={Lock}
-              value={passwords.new}
-              onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
-              required
-            />
-
-            <Input
-              label="Confirm New Password"
-              type="password"
-              icon={Lock}
-              value={passwords.confirm}
-              onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
-              required
-            />
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button type="submit" variant="secondary">
-              Update Password
-            </Button>
-          </div>
-        </form>
-      </Card>
+      </div>
     </div>
   );
 };

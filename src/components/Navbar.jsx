@@ -1,41 +1,38 @@
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Car,
   Search,
   User,
-  Shield,
   LogOut,
-  Menu,
-  X,
-  ChevronDown,
+  Shield,
   Sun,
   Moon,
-  Sparkles,
-  MapPin
+  Menu,
+  X,
+  Sparkles
 } from 'lucide-react';
 import Button from './Button';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { useToast } from '../context/ToastContext';
 
 const Navbar = () => {
-  const navigate = useNavigate();
+  const { isAuthenticated, currentUser, role, logout, setRole } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
-  const { currentUser, role: authRole, isAuthenticated, switchRole, logout } = useAuth();
-  const role = authRole || currentUser?.role || 'user';
-  const { theme = 'light', toggleTheme = () => {} } = useTheme() || {};
-  const { addToast } = useToast();
+  const navigate = useNavigate();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
-  const handleRoleChange = (newRole) => {
-    switchRole(newRole);
-    setRoleDropdownOpen(false);
-    setMobileMenuOpen(false);
-    addToast(`Switched active role to ${newRole.toUpperCase()}`, 'info', 'Role Switcher');
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const handleRoleChange = (e) => {
+    const newRole = e.target.value;
+    setRole(newRole);
     if (newRole === 'admin') {
       navigate('/admin');
     } else {
@@ -43,19 +40,12 @@ const Navbar = () => {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    addToast('You have been signed out.', 'info');
-    navigate('/login');
-  };
-
   return (
     <header className="sticky-header">
       <div style={{
-        maxWidth: '1280px',
+        maxWidth: '1380px',
         margin: '0 auto',
-        padding: '0 1.5rem',
-        height: '70px',
+        padding: '0.85rem 1.5rem',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between'
@@ -65,87 +55,81 @@ const Navbar = () => {
           <div style={{
             width: '40px',
             height: '40px',
-            borderRadius: 'var(--radius-md)',
-            backgroundColor: 'var(--primary)',
+            borderRadius: '12px',
+            background: 'var(--gradient-primary)',
             color: '#FFFFFF',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: 'var(--shadow-sm)'
+            fontWeight: 800,
+            fontSize: '1.35rem',
+            boxShadow: 'var(--gradient-glow)'
           }}>
-            <Car size={22} />
+            P
           </div>
-          <div>
-            <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.02em' }}>
-              ParkEase <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--primary)', backgroundColor: 'var(--primary-light)', padding: '0.15rem 0.4rem', borderRadius: '4px', textTransform: 'uppercase', border: '1px solid var(--primary-border)' }}>India</span>
-            </span>
-          </div>
+          <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.02em' }}>
+            ParkEase<span style={{ color: 'var(--primary)', marginLeft: '2px' }}>.</span>
+          </span>
         </Link>
 
         {/* Desktop Navigation Links */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '1.75rem' }} className="desktop-nav">
+        <nav style={{ display: 'flex', alignItems: 'center', gap: '2rem' }} className="desktop-nav">
+          <Link
+            to="/"
+            className={`nav-link-hover ${location.pathname === '/' ? 'active' : ''}`}
+            style={{ fontSize: '0.925rem', fontWeight: 600 }}
+          >
+            Home
+          </Link>
+
           <Link
             to="/parking"
-            style={{
-              fontSize: '0.9rem',
-              fontWeight: 600,
-              color: location.pathname === '/parking' ? 'var(--primary)' : 'var(--text-secondary)',
-              transition: 'var(--transition)'
-            }}
+            className={`nav-link-hover ${location.pathname === '/parking' ? 'active' : ''}`}
+            style={{ fontSize: '0.925rem', fontWeight: 600 }}
           >
             Find Parking
           </Link>
+
+          <a
+            href="/#how-it-works"
+            className="nav-link-hover"
+            style={{ fontSize: '0.925rem', fontWeight: 600 }}
+          >
+            How It Works
+          </a>
+
           <Link
             to="/about"
-            style={{
-              fontSize: '0.9rem',
-              fontWeight: 600,
-              color: location.pathname === '/about' ? 'var(--primary)' : 'var(--text-secondary)',
-              transition: 'var(--transition)'
-            }}
+            className={`nav-link-hover ${location.pathname === '/about' ? 'active' : ''}`}
+            style={{ fontSize: '0.925rem', fontWeight: 600 }}
           >
             About Us
           </Link>
+
           <Link
             to="/contact"
-            style={{
-              fontSize: '0.9rem',
-              fontWeight: 600,
-              color: location.pathname === '/contact' ? 'var(--primary)' : 'var(--text-secondary)',
-              transition: 'var(--transition)'
-            }}
+            className={`nav-link-hover ${location.pathname === '/contact' ? 'active' : ''}`}
+            style={{ fontSize: '0.925rem', fontWeight: 600 }}
           >
             Contact
           </Link>
 
-          {/* Role Dashboard Quick Links if Logged in */}
+          {/* Logged in Quick Links */}
           {isAuthenticated && role === 'user' && (
             <>
               <Link
                 to="/user/dashboard"
-                style={{
-                  fontSize: '0.9rem',
-                  fontWeight: 700,
-                  color: location.pathname === '/user/dashboard' ? 'var(--primary)' : 'var(--text-secondary)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.35rem'
-                }}
+                className={`nav-link-hover ${location.pathname === '/user/dashboard' ? 'active' : ''}`}
+                style={{ fontSize: '0.925rem', fontWeight: 600 }}
               >
-                My Dashboard
+                Dashboard
               </Link>
               <Link
                 to="/user/profile"
-                style={{
-                  fontSize: '0.9rem',
-                  fontWeight: 700,
-                  color: location.pathname === '/user/profile' ? 'var(--primary)' : 'var(--text-secondary)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.35rem'
-                }}
+                className={`nav-link-hover ${location.pathname === '/user/profile' ? 'active' : ''}`}
+                style={{ fontSize: '0.925rem', fontWeight: 600 }}
               >
-                <User size={16} /> My Profile
+                Profile
               </Link>
             </>
           )}
@@ -153,32 +137,27 @@ const Navbar = () => {
           {isAuthenticated && role === 'admin' && (
             <Link
               to="/admin"
-              style={{
-                fontSize: '0.9rem',
-                fontWeight: 700,
-                color: location.pathname.startsWith('/admin') ? 'var(--primary)' : 'var(--text-secondary)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.35rem'
-              }}
+              className={`nav-link-hover ${location.pathname.startsWith('/admin') ? 'active' : ''}`}
+              style={{ fontSize: '0.925rem', fontWeight: 600 }}
             >
-              <Shield size={16} /> Admin Portal
+              Admin Portal
             </Link>
           )}
         </nav>
 
-        {/* Right Actions: Dark Mode Toggle, Role Switcher (When Logged In), Auth Buttons */}
+        {/* Right Section Actions: Role Switcher, Theme Toggle & Auth Buttons */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-          {/* Dark Mode Toggle Switcher */}
+          
+          {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
+            aria-label="Toggle Theme"
             style={{
               width: '38px',
               height: '38px',
-              borderRadius: 'var(--radius-md)',
+              borderRadius: '50%',
+              backgroundColor: 'var(--card-bg-solid)',
               border: '1px solid var(--border)',
-              backgroundColor: 'var(--card-bg)',
               color: 'var(--text)',
               display: 'flex',
               alignItems: 'center',
@@ -187,97 +166,44 @@ const Navbar = () => {
               transition: 'var(--transition)'
             }}
           >
-            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} color="#F59E0B" />}
+            {theme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
           </button>
 
-          {/* ROLE SWITCHER DROPDOWN — SHOWN ONLY WHEN LOGGED IN */}
+          {/* Role Switcher Pill */}
           {isAuthenticated && (
-            <div style={{ position: 'relative' }}>
-              <button
-                onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.3rem',
+              padding: '0.3rem 0.75rem',
+              borderRadius: '9999px',
+              backgroundColor: 'var(--card-bg-solid)',
+              border: '1px solid var(--border)',
+              fontSize: '0.78rem',
+              color: 'var(--text-secondary)',
+              fontWeight: 600
+            }}>
+              <Sparkles size={13} color="var(--primary)" />
+              <select
+                value={role}
+                onChange={handleRoleChange}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.4rem 0.75rem',
-                  borderRadius: 'var(--radius-md)',
-                  border: '1px solid var(--primary-border)',
-                  backgroundColor: 'var(--primary-light)',
-                  color: 'var(--primary)',
+                  border: 'none',
+                  background: 'transparent',
+                  color: 'var(--text)',
+                  fontSize: '0.78rem',
                   fontWeight: 700,
-                  fontSize: '0.825rem',
-                  cursor: 'pointer',
-                  transition: 'var(--transition)'
+                  outline: 'none',
+                  cursor: 'pointer'
                 }}
               >
-                <Sparkles size={14} />
-                <span>Role: {role.toUpperCase()}</span>
-                <ChevronDown size={14} />
-              </button>
-
-              {roleDropdownOpen && (
-                <div style={{
-                  position: 'absolute',
-                  top: '115%',
-                  right: 0,
-                  width: '190px',
-                  backgroundColor: 'var(--card-bg)',
-                  borderRadius: 'var(--radius-md)',
-                  boxShadow: 'var(--shadow-lg)',
-                  border: '1px solid var(--border)',
-                  padding: '0.5rem',
-                  zIndex: 1050,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.25rem'
-                }}>
-                  <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', padding: '0.3rem 0.5rem', textTransform: 'uppercase' }}>
-                    Switch Demo Role
-                  </div>
-                  <button
-                    onClick={() => handleRoleChange('user')}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      padding: '0.5rem',
-                      borderRadius: 'var(--radius-sm)',
-                      border: 'none',
-                      backgroundColor: role === 'user' ? 'var(--primary-light)' : 'transparent',
-                      color: role === 'user' ? 'var(--primary)' : 'var(--text)',
-                      fontWeight: role === 'user' ? 700 : 500,
-                      fontSize: '0.85rem',
-                      textAlign: 'left',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <User size={15} /> Driver (User)
-                  </button>
-                  <button
-                    onClick={() => handleRoleChange('admin')}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      padding: '0.5rem',
-                      borderRadius: 'var(--radius-sm)',
-                      border: 'none',
-                      backgroundColor: role === 'admin' ? 'var(--primary-light)' : 'transparent',
-                      color: role === 'admin' ? 'var(--primary)' : 'var(--text)',
-                      fontWeight: role === 'admin' ? 700 : 500,
-                      fontSize: '0.85rem',
-                      textAlign: 'left',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <Shield size={15} /> Administrator
-                  </button>
-                </div>
-              )}
+                <option value="user" style={{ background: 'var(--card-bg-solid)', color: 'var(--text)' }}>Role: USER</option>
+                <option value="admin" style={{ background: 'var(--card-bg-solid)', color: 'var(--text)' }}>Role: ADMIN</option>
+              </select>
             </div>
           )}
 
-          {/* User Auth Buttons or User Avatar Menu */}
+          {/* Auth Action Buttons or User Avatar */}
           {isAuthenticated ? (
             <div style={{ position: 'relative' }}>
               <button
@@ -295,7 +221,7 @@ const Navbar = () => {
                 <img
                   src={currentUser?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80"}
                   alt={currentUser?.name}
-                  style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }}
+                  style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }}
                 />
               </button>
 
@@ -305,7 +231,7 @@ const Navbar = () => {
                   top: '115%',
                   right: 0,
                   width: '210px',
-                  backgroundColor: 'var(--card-bg)',
+                  backgroundColor: 'var(--card-bg-solid)',
                   borderRadius: 'var(--radius-md)',
                   boxShadow: 'var(--shadow-lg)',
                   border: '1px solid var(--border)',
@@ -359,10 +285,14 @@ const Navbar = () => {
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
               <Link to="/login">
-                <Button variant="ghost" size="sm">Sign In</Button>
+                <Button variant="outline" size="sm" style={{ borderRadius: '9999px', padding: '0.45rem 1.25rem' }}>
+                  Log In
+                </Button>
               </Link>
               <Link to="/register">
-                <Button variant="primary" size="sm">Register</Button>
+                <button className="btn-gradient" style={{ padding: '0.5rem 1.35rem', borderRadius: '9999px', fontSize: '0.875rem', cursor: 'pointer' }}>
+                  Sign Up
+                </button>
               </Link>
             </div>
           )}
