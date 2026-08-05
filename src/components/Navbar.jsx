@@ -72,7 +72,7 @@ const Navbar = () => {
           </span>
         </Link>
 
-        {/* Desktop Navigation Links */}
+        {/* Rearranged Desktop Navigation Links (How It Works & About Us removed from Header) */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: '2rem' }} className="desktop-nav">
           <Link
             to="/"
@@ -88,22 +88,6 @@ const Navbar = () => {
             style={{ fontSize: '0.925rem', fontWeight: 600 }}
           >
             Find Parking
-          </Link>
-
-          <a
-            href="/#how-it-works"
-            className="nav-link-hover"
-            style={{ fontSize: '0.925rem', fontWeight: 600 }}
-          >
-            How It Works
-          </a>
-
-          <Link
-            to="/about"
-            className={`nav-link-hover ${location.pathname === '/about' ? 'active' : ''}`}
-            style={{ fontSize: '0.925rem', fontWeight: 600 }}
-          >
-            About Us
           </Link>
 
           <Link

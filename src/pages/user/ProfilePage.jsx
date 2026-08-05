@@ -12,9 +12,9 @@ import {
   MapPin,
   Sparkles,
   Zap,
-  Activity,
-  History,
-  Award
+  Camera,
+  Upload,
+  Check
 } from 'lucide-react';
 import Card from '../../components/Card';
 import Input from '../../components/Input';
@@ -22,11 +22,20 @@ import Button from '../../components/Button';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
+const PRESET_AVATARS = [
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80',
+  'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80',
+  'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80'
+];
+
 const ProfilePage = () => {
   const { currentUser, updateProfile } = useAuth();
   const { addToast } = useToast();
 
   const [isEditing, setIsEditing] = useState(false);
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  
   const [formData, setFormData] = useState({
     name: currentUser?.name || 'Alex Morgan',
     email: currentUser?.email || 'alex.morgan@parkease.in',
@@ -34,7 +43,7 @@ const ProfilePage = () => {
     vehiclePlate: currentUser?.vehiclePlate || 'DL-01-AB-1234',
     city: currentUser?.city || 'New Delhi',
     evPreference: true,
-    avatar: currentUser?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80'
+    avatar: currentUser?.avatar || PRESET_AVATARS[0]
   });
 
   const [passwords, setPasswords] = useState({ current: '', new: '', confirm: '' });
@@ -43,7 +52,20 @@ const ProfilePage = () => {
     e.preventDefault();
     updateProfile(formData);
     setIsEditing(false);
+    setShowAvatarPicker(false);
     addToast('Profile & ANPR telemetry updated!', 'success', 'Saved');
+  };
+
+  const handleAvatarFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, avatar: reader.result });
+        addToast('New profile photo loaded.', 'info');
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handlePasswordSubmit = (e) => {
@@ -82,7 +104,7 @@ const ProfilePage = () => {
           }} />
         </div>
 
-        {/* User Header Glass Card (Unclipped Profile Image) */}
+        {/* User Header Glass Card (Unclipped Profile Image + Camera Edit Button) */}
         <div className="glass-card" style={{
           marginTop: '-3.5rem',
           marginRight: '1.5rem',
@@ -102,8 +124,9 @@ const ProfilePage = () => {
           zIndex: 10
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-            {/* Fully Visible Profile Avatar Circle */}
-            <div style={{ position: 'relative' }}>
+            
+            {/* Interactive User Profile Avatar Circle with Edit Camera Badge */}
+            <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setShowAvatarPicker(!showAvatarPicker)}>
               <img
                 src={formData.avatar}
                 alt={formData.name}
@@ -118,17 +141,21 @@ const ProfilePage = () => {
                   display: 'block'
                 }}
               />
-              <span style={{
+
+              {/* Camera Edit Badge Overlay */}
+              <div style={{
                 position: 'absolute',
-                bottom: '4px',
-                right: '4px',
-                width: '16px',
-                height: '16px',
+                inset: 0,
                 borderRadius: '50%',
-                backgroundColor: 'var(--success)',
-                border: '3px solid var(--bg-secondary)',
-                boxShadow: '0 0 8px var(--success)'
-              }} />
+                backgroundColor: 'rgba(15, 23, 42, 0.5)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: 0.9,
+                transition: 'var(--transition)'
+              }}>
+                <Camera size={24} color="#FFFFFF" />
+              </div>
             </div>
 
             <div>
@@ -156,7 +183,10 @@ const ProfilePage = () => {
           </div>
 
           <button
-            onClick={() => setIsEditing(!isEditing)}
+            onClick={() => {
+              setIsEditing(!isEditing);
+              setShowAvatarPicker(!isEditing);
+            }}
             className="btn-gradient"
             style={{
               padding: '0.7rem 1.6rem',
@@ -169,10 +199,91 @@ const ProfilePage = () => {
             }}
           >
             <Edit3 size={16} />
-            <span>{isEditing ? 'Cancel Edit' : 'Edit Profile'}</span>
+            <span>{isEditing ? 'Cancel Edit' : 'Edit Profile & Photo'}</span>
           </button>
         </div>
       </div>
+
+      {/* Avatar Image Selector Dropdown Panel */}
+      {(showAvatarPicker || isEditing) && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          transition={{ duration: 0.4 }}
+          style={{ marginBottom: '2.5rem' }}
+        >
+          <Card padding="lg">
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Camera size={18} color="var(--primary)" /> Edit Profile Avatar Image
+            </h3>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', alignItems: 'center' }}>
+              
+              {/* Preset Avatar Selection */}
+              <div>
+                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)', display: 'block', marginBottom: '0.6rem' }}>
+                  Choose Preset Avatar
+                </label>
+                <div style={{ display: 'flex', gap: '0.85rem' }}>
+                  {PRESET_AVATARS.map((url, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, avatar: url })}
+                      style={{
+                        position: 'relative',
+                        padding: 0,
+                        border: 'none',
+                        background: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <img
+                        src={url}
+                        alt={`Preset ${idx + 1}`}
+                        style={{
+                          width: '56px',
+                          height: '56px',
+                          borderRadius: '50%',
+                          objectFit: 'cover',
+                          border: formData.avatar === url ? '3px solid var(--primary)' : '2px solid var(--border)',
+                          boxShadow: formData.avatar === url ? '0 0 12px var(--primary)' : 'none'
+                        }}
+                      />
+                      {formData.avatar === url && (
+                        <div style={{ position: 'absolute', bottom: 0, right: 0, backgroundColor: 'var(--primary)', borderRadius: '50%', padding: '2px', color: '#FFF' }}>
+                          <Check size={12} />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Upload Local File or Enter Image URL */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                  Upload Custom Image File
+                </label>
+                <label className="btn-gradient" style={{
+                  padding: '0.5rem 1.25rem',
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  width: 'fit-content'
+                }}>
+                  <Upload size={16} />
+                  <span>Choose Photo File</span>
+                  <input type="file" accept="image/*" onChange={handleAvatarFileUpload} style={{ display: 'none' }} />
+                </label>
+              </div>
+
+            </div>
+          </Card>
+        </motion.div>
+      )}
 
       {/* Main Profile Grid Sections */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem' }}>

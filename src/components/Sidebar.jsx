@@ -11,7 +11,9 @@ import {
   Users,
   FileText,
   BarChart3,
-  LogOut
+  LogOut,
+  HelpCircle,
+  Info
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -24,6 +26,8 @@ const Sidebar = ({ isAdminMode = false }) => {
     { label: 'Find Parking', path: '/parking', icon: MapPin },
     { label: 'Booking History', path: '/user/bookings', icon: History },
     { label: 'My Profile', path: '/user/profile', icon: User },
+    { label: 'How It Works', path: '/#how-it-works', icon: HelpCircle },
+    { label: 'About Us', path: '/about', icon: Info },
     { label: 'Settings', path: '/user/settings', icon: Settings },
   ];
 

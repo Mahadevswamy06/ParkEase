@@ -95,6 +95,12 @@ body {
   background-attachment: fixed;
 }
 
+/* Custom Input Field & Placeholder Styling */
+.custom-input-field::placeholder {
+  color: var(--text-muted) !important;
+  opacity: 0.8;
+}
+
 /* Glassmorphism Card Utility */
 .glass-card {
   background: var(--card-bg);
@@ -165,6 +171,7 @@ body {
   position: relative;
   color: var(--text-secondary);
   transition: color 0.25s ease;
+  text-decoration: none;
 }
 
 .nav-link-hover:hover {
