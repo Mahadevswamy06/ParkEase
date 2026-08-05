@@ -95,13 +95,20 @@ body {
   background-attachment: fixed;
 }
 
-/* Global High-Contrast Placeholder Styling across All Inputs, Selects & Textareas */
+/* Global High-Contrast Placeholder Styling & Focus Brightening */
 input::placeholder,
 textarea::placeholder,
 select::placeholder,
 .custom-input-field::placeholder {
   color: #94A3B8 !important;
   opacity: 1 !important;
+  transition: color 0.3s ease;
+}
+
+input:focus::placeholder,
+textarea:focus::placeholder,
+.custom-input-field:focus::placeholder {
+  color: #CBD5E1 !important;
 }
 
 [data-theme="light"] input::placeholder,
@@ -113,6 +120,17 @@ select::placeholder,
 
 input, select, textarea {
   color: var(--text) !important;
+}
+
+/* Error Shake Animation */
+@keyframes inputShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.animate-shake {
+  animation: inputShake 0.4s ease-in-out;
 }
 
 /* Glassmorphism Card Utility */

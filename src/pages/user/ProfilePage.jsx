@@ -6,15 +6,16 @@ import {
   Phone,
   Car,
   Lock,
-  ShieldCheck,
   Edit3,
   Save,
   MapPin,
-  Sparkles,
   Zap,
   Camera,
   Upload,
-  Check
+  Check,
+  CheckCircle2,
+  XCircle,
+  Loader2
 } from 'lucide-react';
 import Card from '../../components/Card';
 import Input from '../../components/Input';
@@ -35,7 +36,7 @@ const ProfilePage = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     name: currentUser?.name || 'Alex Morgan',
     email: currentUser?.email || 'alex.morgan@parkease.in',
@@ -46,7 +47,29 @@ const ProfilePage = () => {
     avatar: currentUser?.avatar || PRESET_AVATARS[0]
   });
 
+  // Password state & status tracking
   const [passwords, setPasswords] = useState({ current: '', new: '', confirm: '' });
+  const [passwordErrors, setPasswordErrors] = useState({ current: '', new: '', confirm: '' });
+  const [passwordStatus, setPasswordStatus] = useState('idle'); // idle | loading | success
+
+  // Real-time password validation criteria
+  const newPass = passwords.new;
+  const validations = {
+    length: newPass.length >= 8,
+    uppercase: /[A-Z]/.test(newPass),
+    lowercase: /[a-z]/.test(newPass),
+    number: /[0-9]/.test(newPass),
+    special: /[!@#$%^&*(),.?":{}|<>]/.test(newPass)
+  };
+
+  const isPasswordValid =
+    passwords.current.length > 0 &&
+    validations.length &&
+    validations.uppercase &&
+    validations.lowercase &&
+    validations.number &&
+    validations.special &&
+    passwords.new === passwords.confirm;
 
   const handleProfileSubmit = (e) => {
     e.preventDefault();
@@ -70,12 +93,38 @@ const ProfilePage = () => {
 
   const handlePasswordSubmit = (e) => {
     e.preventDefault();
-    if (passwords.new !== passwords.confirm) {
-      addToast('New passwords do not match.', 'danger');
+
+    const errors = { current: '', new: '', confirm: '' };
+
+    if (!passwords.current) {
+      errors.current = 'Current password is required.';
+    }
+
+    if (!isPasswordValid) {
+      if (!validations.length) errors.new = 'Must be at least 8 characters long.';
+      else if (!validations.uppercase || !validations.lowercase || !validations.number || !validations.special) {
+        errors.new = 'Must meet all complexity criteria.';
+      }
+      if (passwords.new !== passwords.confirm) {
+        errors.confirm = 'Passwords do not match.';
+      }
+      setPasswordErrors(errors);
+      addToast('Please satisfy all password criteria.', 'danger');
       return;
     }
-    addToast('Security password updated.', 'success');
-    setPasswords({ current: '', new: '', confirm: '' });
+
+    setPasswordErrors({ current: '', new: '', confirm: '' });
+    setPasswordStatus('loading');
+
+    setTimeout(() => {
+      setPasswordStatus('success');
+      addToast('Password updated successfully!', 'success');
+
+      setTimeout(() => {
+        setPasswordStatus('idle');
+        setPasswords({ current: '', new: '', confirm: '' });
+      }, 2500);
+    }, 1200);
   };
 
   return (
@@ -83,7 +132,6 @@ const ProfilePage = () => {
       
       {/* Top Cover Banner Container */}
       <div style={{ position: 'relative', marginBottom: '2.5rem' }}>
-        {/* Cover Image */}
         <div style={{
           height: '220px',
           borderRadius: 'var(--radius-xl)',
@@ -104,7 +152,7 @@ const ProfilePage = () => {
           }} />
         </div>
 
-        {/* User Header Glass Card (Unclipped Profile Image + Camera Edit Button) */}
+        {/* User Header Glass Card */}
         <div className="glass-card" style={{
           marginTop: '-3.5rem',
           marginRight: '1.5rem',
@@ -124,8 +172,6 @@ const ProfilePage = () => {
           zIndex: 10
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-            
-            {/* Interactive User Profile Avatar Circle with Edit Camera Badge */}
             <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setShowAvatarPicker(!showAvatarPicker)}>
               <img
                 src={formData.avatar}
@@ -141,8 +187,6 @@ const ProfilePage = () => {
                   display: 'block'
                 }}
               />
-
-              {/* Camera Edit Badge Overlay */}
               <div style={{
                 position: 'absolute',
                 inset: 0,
@@ -218,8 +262,6 @@ const ProfilePage = () => {
             </h3>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', alignItems: 'center' }}>
-              
-              {/* Preset Avatar Selection */}
               <div>
                 <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)', display: 'block', marginBottom: '0.6rem' }}>
                   Choose Preset Avatar
@@ -260,7 +302,6 @@ const ProfilePage = () => {
                 </div>
               </div>
 
-              {/* Upload Local File or Enter Image URL */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
                   Upload Custom Image File
@@ -279,7 +320,6 @@ const ProfilePage = () => {
                   <input type="file" accept="image/*" onChange={handleAvatarFileUpload} style={{ display: 'none' }} />
                 </label>
               </div>
-
             </div>
           </Card>
         </motion.div>
@@ -379,7 +419,7 @@ const ProfilePage = () => {
           </Card>
         </motion.div>
 
-        {/* Section 3: Security & Password Settings */}
+        {/* Section 3: Security & Password Settings (Strict Prompt Requirements) */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
           <Card padding="lg">
             <form onSubmit={handlePasswordSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -390,38 +430,153 @@ const ProfilePage = () => {
               <Input
                 label="Current Password"
                 type="password"
+                placeholder="Enter current password"
                 icon={Lock}
                 value={passwords.current}
-                onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
+                error={passwordErrors.current}
+                onChange={(e) => {
+                  setPasswords({ ...passwords, current: e.target.value });
+                  if (passwordErrors.current) setPasswordErrors({ ...passwordErrors, current: '' });
+                }}
                 required
               />
 
               <Input
                 label="New Password"
                 type="password"
+                placeholder="Enter new password"
                 icon={Lock}
                 value={passwords.new}
-                onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
+                error={passwordErrors.new}
+                success={validations.length && validations.uppercase && validations.lowercase && validations.number && validations.special}
+                onChange={(e) => {
+                  setPasswords({ ...passwords, new: e.target.value });
+                  if (passwordErrors.new) setPasswordErrors({ ...passwordErrors, new: '' });
+                }}
                 required
               />
+
+              {/* Inline Password Requirements Validation Checklist */}
+              <div style={{
+                backgroundColor: 'rgba(15, 23, 42, 0.6)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '12px',
+                padding: '0.85rem 1rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.4rem'
+              }}>
+                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#94A3B8', marginBottom: '0.2rem' }}>
+                  Password must contain:
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.35rem 1rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: validations.length ? '#22C55E' : '#94A3B8' }}>
+                    {validations.length ? <CheckCircle2 size={13} color="#22C55E" /> : <XCircle size={13} color="#64748B" />}
+                    <span>8+ characters</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: validations.uppercase ? '#22C55E' : '#94A3B8' }}>
+                    {validations.uppercase ? <CheckCircle2 size={13} color="#22C55E" /> : <XCircle size={13} color="#64748B" />}
+                    <span>Uppercase (A-Z)</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: validations.lowercase ? '#22C55E' : '#94A3B8' }}>
+                    {validations.lowercase ? <CheckCircle2 size={13} color="#22C55E" /> : <XCircle size={13} color="#64748B" />}
+                    <span>Lowercase (a-z)</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: validations.number ? '#22C55E' : '#94A3B8' }}>
+                    {validations.number ? <CheckCircle2 size={13} color="#22C55E" /> : <XCircle size={13} color="#64748B" />}
+                    <span>Number (0-9)</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: validations.special ? '#22C55E' : '#94A3B8' }}>
+                    {validations.special ? <CheckCircle2 size={13} color="#22C55E" /> : <XCircle size={13} color="#64748B" />}
+                    <span>Special character (!@#$)</span>
+                  </div>
+                </div>
+              </div>
 
               <Input
                 label="Confirm New Password"
                 type="password"
+                placeholder="Confirm new password"
                 icon={Lock}
                 value={passwords.confirm}
-                onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
+                error={passwordErrors.confirm}
+                success={passwords.confirm.length > 0 && passwords.new === passwords.confirm}
+                onChange={(e) => {
+                  setPasswords({ ...passwords, confirm: e.target.value });
+                  if (passwordErrors.confirm) setPasswordErrors({ ...passwordErrors, confirm: '' });
+                }}
                 required
               />
 
-              <Button type="submit" variant="secondary">
-                Update Security Password
-              </Button>
+              {/* Requirement #4: Spec-Compliant Update Password Button */}
+              <button
+                type="submit"
+                disabled={!isPasswordValid || passwordStatus === 'loading'}
+                style={{
+                  width: '100%',
+                  height: '48px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  fontWeight: 700,
+                  fontSize: '0.95rem',
+                  color: (!isPasswordValid || passwordStatus === 'loading') ? '#9CA3AF' : '#FFFFFF',
+                  background: (!isPasswordValid || passwordStatus === 'loading')
+                    ? '#374151'
+                    : 'linear-gradient(135deg, #7C3AED 0%, #3B82F6 100%)',
+                  cursor: (!isPasswordValid || passwordStatus === 'loading') ? 'not-allowed' : 'pointer',
+                  boxShadow: (!isPasswordValid || passwordStatus === 'loading')
+                    ? 'none'
+                    : '0 4px 20px rgba(124, 58, 237, 0.4)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                }}
+                onMouseEnter={(e) => {
+                  if (isPasswordValid && passwordStatus !== 'loading') {
+                    e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
+                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(124, 58, 237, 0.55)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (isPasswordValid && passwordStatus !== 'loading') {
+                    e.currentTarget.style.transform = 'none';
+                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(124, 58, 237, 0.4)';
+                  }
+                }}
+                onMouseDown={(e) => {
+                  if (isPasswordValid && passwordStatus !== 'loading') {
+                    e.currentTarget.style.transform = 'scale(0.98)';
+                  }
+                }}
+              >
+                {passwordStatus === 'loading' ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" style={{ animation: 'spin 1s linear infinite' }} />
+                    <span>Updating...</span>
+                  </>
+                ) : passwordStatus === 'success' ? (
+                  <>
+                    <CheckCircle2 size={18} color="#22C55E" />
+                    <span>Password Updated Successfully</span>
+                  </>
+                ) : (
+                  <span>Update Security Password</span>
+                )}
+              </button>
             </form>
           </Card>
         </motion.div>
 
       </div>
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };
