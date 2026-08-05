@@ -4,13 +4,13 @@
 :root {
   --bg: #050816;
   --bg-secondary: #0F172A;
-  --card-bg: rgba(15, 23, 42, 0.75);
+  --card-bg: rgba(15, 23, 42, 0.85);
   --card-bg-solid: #0F172A;
-  --card-border: rgba(255, 255, 255, 0.08);
+  --card-border: rgba(255, 255, 255, 0.16);
 
   --primary: #7C3AED;
   --primary-hover: #6D28D9;
-  --primary-light: rgba(124, 58, 237, 0.15);
+  --primary-light: rgba(124, 58, 237, 0.18);
 
   --secondary: #3B82F6;
   --accent: #38BDF8;
@@ -30,11 +30,11 @@
   --danger-light: rgba(239, 68, 68, 0.15);
 
   --text: #FFFFFF;
-  --text-secondary: #CBD5E1;
-  --text-muted: #64748B;
+  --text-secondary: #E2E8F0;
+  --text-muted: #94A3B8;
 
-  --border: rgba(255, 255, 255, 0.08);
-  --navbar-bg: rgba(5, 8, 22, 0.85);
+  --border: rgba(255, 255, 255, 0.16);
+  --navbar-bg: rgba(5, 8, 22, 0.88);
 
   --radius-sm: 8px;
   --radius-md: 14px;
@@ -52,16 +52,16 @@
 [data-theme="light"] {
   --bg: #F8FAFC;
   --bg-secondary: #FFFFFF;
-  --card-bg: rgba(255, 255, 255, 0.85);
+  --card-bg: rgba(255, 255, 255, 0.95);
   --card-bg-solid: #FFFFFF;
-  --card-border: rgba(226, 232, 240, 0.8);
+  --card-border: rgba(226, 232, 240, 0.9);
 
   --text: #0F172A;
-  --text-secondary: #475569;
-  --text-muted: #94A3B8;
+  --text-secondary: #334155;
+  --text-muted: #64748B;
 
-  --border: #E2E8F0;
-  --navbar-bg: rgba(255, 255, 255, 0.85);
+  --border: #CBD5E1;
+  --navbar-bg: rgba(255, 255, 255, 0.9);
 
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
@@ -95,10 +95,24 @@ body {
   background-attachment: fixed;
 }
 
-/* Custom Input Field & Placeholder Styling */
+/* Global High-Contrast Placeholder Styling across All Inputs, Selects & Textareas */
+input::placeholder,
+textarea::placeholder,
+select::placeholder,
 .custom-input-field::placeholder {
-  color: var(--text-muted) !important;
-  opacity: 0.8;
+  color: #94A3B8 !important;
+  opacity: 1 !important;
+}
+
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder,
+[data-theme="light"] .custom-input-field::placeholder {
+  color: #64748B !important;
+  opacity: 1 !important;
+}
+
+input, select, textarea {
+  color: var(--text) !important;
 }
 
 /* Glassmorphism Card Utility */
@@ -113,7 +127,7 @@ body {
 }
 
 .glass-card:hover {
-  border-color: rgba(124, 58, 237, 0.35);
+  border-color: rgba(124, 58, 237, 0.4);
   box-shadow: var(--shadow-lg);
 }
 

@@ -31,7 +31,7 @@ const Input = ({
           <div style={{
             position: 'absolute',
             left: '14px',
-            color: 'var(--text-muted)',
+            color: '#94A3B8',
             display: 'flex',
             alignItems: 'center',
             pointerEvents: 'none',
@@ -57,7 +57,7 @@ const Input = ({
             paddingRight: '14px',
             fontSize: '0.95rem',
             color: 'var(--text)',
-            backgroundColor: disabled ? 'rgba(255, 255, 255, 0.04)' : 'var(--bg-secondary)',
+            backgroundColor: disabled ? 'rgba(255, 255, 255, 0.05)' : 'var(--bg-secondary)',
             border: `1px solid ${error ? 'var(--danger)' : 'var(--border)'}`,
             borderRadius: 'var(--radius-md)',
             outline: 'none',
@@ -67,7 +67,7 @@ const Input = ({
           }}
           onFocus={(e) => {
             if (!error) e.target.style.borderColor = 'var(--primary)';
-            e.target.style.boxShadow = `0 0 0 3px ${error ? 'rgba(239, 68, 68, 0.2)' : 'rgba(124, 58, 237, 0.25)'}`;
+            e.target.style.boxShadow = `0 0 0 3px ${error ? 'rgba(239, 68, 68, 0.25)' : 'rgba(124, 58, 237, 0.3)'}`;
           }}
           onBlur={(e) => {
             if (!error) e.target.style.borderColor = 'var(--border)';
@@ -78,7 +78,7 @@ const Input = ({
       </div>
 
       {error && <span style={{ fontSize: '0.8rem', color: 'var(--danger)', fontWeight: 500 }}>{error}</span>}
-      {!error && helperText && <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{helperText}</span>}
+      {!error && helperText && <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{helperText}</span>}
     </div>
   );
 };
