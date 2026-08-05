@@ -59,71 +59,111 @@ const ProfilePage = () => {
   return (
     <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '2rem 1.5rem 4rem' }} className="animate-fade-in">
       
-      {/* Top Cover Banner */}
-      <div style={{
-        position: 'relative',
-        height: '240px',
-        borderRadius: 'var(--radius-xl)',
-        overflow: 'hidden',
-        border: '1px solid rgba(124, 58, 237, 0.3)',
-        boxShadow: 'var(--shadow-lg)',
-        marginBottom: '4rem'
-      }}>
-        <img
-          src="https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1200&q=80"
-          alt="Luxury Automotive Cover"
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-        />
+      {/* Top Cover Banner Container */}
+      <div style={{ position: 'relative', marginBottom: '2.5rem' }}>
+        {/* Cover Image */}
         <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'linear-gradient(180deg, rgba(5, 8, 22, 0.2) 0%, rgba(5, 8, 22, 0.85) 100%)'
-        }} />
-
-        {/* User Profile Avatar Floating Overlay */}
-        <div style={{
-          position: 'absolute',
-          bottom: '-2.5rem',
-          left: '2.5rem',
-          display: 'flex',
-          alignItems: 'flex-end',
-          gap: '1.5rem'
+          height: '220px',
+          borderRadius: 'var(--radius-xl)',
+          overflow: 'hidden',
+          position: 'relative',
+          border: '1px solid rgba(124, 58, 237, 0.3)',
+          boxShadow: 'var(--shadow-md)'
         }}>
           <img
-            src={formData.avatar}
-            alt={formData.name}
-            style={{
-              width: '110px',
-              height: '110px',
-              borderRadius: '50%',
-              objectFit: 'cover',
-              border: '4px solid var(--bg)',
-              boxShadow: 'var(--shadow-lg)',
-              backgroundColor: 'var(--bg)'
-            }}
+            src="https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1200&q=80"
+            alt="Luxury Automotive Cover"
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
-          <div style={{ marginBottom: '0.5rem' }}>
-            <h1 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#FFFFFF' }}>{formData.name}</h1>
-            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{formData.email}</p>
-          </div>
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(180deg, rgba(5, 8, 22, 0.1) 0%, rgba(5, 8, 22, 0.8) 100%)'
+          }} />
         </div>
 
-        <div style={{
-          position: 'absolute',
-          bottom: '1.5rem',
-          right: '2rem',
+        {/* User Header Glass Card (Unclipped Profile Image) */}
+        <div className="glass-card" style={{
+          marginTop: '-3.5rem',
+          marginRight: '1.5rem',
+          marginLeft: '1.5rem',
+          padding: '1.75rem 2.25rem',
+          borderRadius: 'var(--radius-xl)',
+          backgroundColor: 'rgba(15, 23, 42, 0.92)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(124, 58, 237, 0.35)',
+          boxShadow: 'var(--shadow-lg)',
           display: 'flex',
-          gap: '0.75rem'
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '1.5rem',
+          position: 'relative',
+          zIndex: 10
         }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+            {/* Fully Visible Profile Avatar Circle */}
+            <div style={{ position: 'relative' }}>
+              <img
+                src={formData.avatar}
+                alt={formData.name}
+                style={{
+                  width: '96px',
+                  height: '96px',
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  border: '3px solid var(--primary)',
+                  boxShadow: '0 0 20px rgba(124, 58, 237, 0.5)',
+                  backgroundColor: 'var(--bg)',
+                  display: 'block'
+                }}
+              />
+              <span style={{
+                position: 'absolute',
+                bottom: '4px',
+                right: '4px',
+                width: '16px',
+                height: '16px',
+                borderRadius: '50%',
+                backgroundColor: 'var(--success)',
+                border: '3px solid var(--bg-secondary)',
+                boxShadow: '0 0 8px var(--success)'
+              }} />
+            </div>
+
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <h1 style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--text)' }}>{formData.name}</h1>
+                <span style={{
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  backgroundColor: 'var(--primary-light)',
+                  color: 'var(--primary)',
+                  padding: '0.25rem 0.75rem',
+                  borderRadius: '9999px',
+                  border: '1px solid rgba(124, 58, 237, 0.3)'
+                }}>
+                  ANPR Verified Driver
+                </span>
+              </div>
+              <p style={{ fontSize: '0.925rem', color: 'var(--text-secondary)', marginTop: '4px' }}>{formData.email}</p>
+              <div style={{ display: 'flex', gap: '1.25rem', marginTop: '0.5rem', fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+                <span>📍 {formData.city}</span>
+                <span>🚗 {formData.vehiclePlate}</span>
+                <span>⭐ Member since Jan 2024</span>
+              </div>
+            </div>
+          </div>
+
           <button
             onClick={() => setIsEditing(!isEditing)}
             className="btn-gradient"
             style={{
-              padding: '0.6rem 1.4rem',
+              padding: '0.7rem 1.6rem',
               borderRadius: '9999px',
-              fontSize: '0.875rem',
+              fontSize: '0.9rem',
               cursor: 'pointer',
-              display: 'flex',
+              display: 'inline-flex',
               alignItems: 'center',
               gap: '0.5rem'
             }}
@@ -137,7 +177,7 @@ const ProfilePage = () => {
       {/* Main Profile Grid Sections */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem' }}>
         
-        {/* Section 1: Personal & Vehicle Info */}
+        {/* Section 1: Personal & Driver Info */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <Card padding="lg">
             <form onSubmit={handleProfileSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
