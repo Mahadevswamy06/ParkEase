@@ -1,12 +1,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { INITIAL_USERS } from '../utils/dummyData';
+import { MOCK_USERS } from '../data/demoData';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(() => {
-    const saved = localStorage.getItem('parkease_user');
-    return saved ? JSON.parse(saved) : INITIAL_USERS[0]; // Default user: Alex Morgan
+    try {
+      const saved = localStorage.getItem('parkease_user');
+      return saved ? JSON.parse(saved) : MOCK_USERS[0]; // Default: Mahadev Swamy (Driver)
+    } catch (e) {
+      return MOCK_USERS[0];
+    }
   });
 
   useEffect(() => {
@@ -18,22 +22,20 @@ export const AuthProvider = ({ children }) => {
   }, [currentUser]);
 
   const login = (email, password) => {
-    const found = INITIAL_USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
+    const found = MOCK_USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
     if (found) {
       setCurrentUser(found);
       return { success: true, user: found };
     }
-    // If custom email, generate mock user
     const newUser = {
       id: `usr-${Date.now()}`,
-      name: email.split('@')[0],
+      name: email.split('@')[0].replace('.', ' '),
       email: email,
-      phone: "+1 (555) 123-9999",
-      role: email.includes('admin') ? 'admin' : 'user',
-      avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80",
+      phone: "+91 98765 43210",
+      role: email.includes('admin') ? 'admin' : 'driver',
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
       memberSince: "Aug 2026",
       totalBookings: 0,
-      vehiclePlate: "CA-1029-X",
       status: "Active"
     };
     setCurrentUser(newUser);
@@ -45,12 +47,11 @@ export const AuthProvider = ({ children }) => {
       id: `usr-${Date.now()}`,
       name: userData.name,
       email: userData.email,
-      phone: userData.phone || "+91 98765 00000",
-      role: userData.role || "user",
-      avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80",
+      phone: userData.phone || "+91 98765 43210",
+      role: userData.role || "driver",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
       memberSince: "Aug 2026",
       totalBookings: 0,
-      vehiclePlate: userData.vehiclePlate || "DL-01-AB-1234",
       status: "Active"
     };
     setCurrentUser(newUser);
@@ -61,35 +62,33 @@ export const AuthProvider = ({ children }) => {
     setCurrentUser(null);
   };
 
-  const switchRole = (role) => {
-    if (role === 'guest') {
-      setCurrentUser(null);
-    } else if (role === 'admin') {
-      const adminUser = INITIAL_USERS.find(u => u.role === 'admin') || INITIAL_USERS[1];
+  const setRole = (role) => {
+    if (role === 'admin') {
+      const adminUser = MOCK_USERS.find(u => u.role === 'admin') || { ...currentUser, role: 'admin' };
       setCurrentUser(adminUser);
     } else {
-      const standardUser = INITIAL_USERS.find(u => u.role === 'user') || INITIAL_USERS[0];
-      setCurrentUser(standardUser);
+      const driverUser = MOCK_USERS.find(u => u.role === 'driver') || { ...currentUser, role: 'driver' };
+      setCurrentUser(driverUser);
     }
   };
 
-  const updateProfile = (updatedFields) => {
+  const updateProfile = (fields) => {
     setCurrentUser(prev => ({
       ...prev,
-      ...updatedFields
+      ...fields
     }));
   };
 
   return (
     <AuthContext.Provider value={{
       currentUser,
-      role: currentUser?.role || 'user',
+      role: currentUser?.role || 'driver',
       isAuthenticated: !!currentUser,
       isAdmin: currentUser?.role === 'admin',
       login,
       register,
       logout,
-      switchRole,
+      setRole,
       updateProfile
     }}>
       {children}

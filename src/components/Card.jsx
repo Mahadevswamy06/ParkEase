@@ -20,7 +20,7 @@ const Card = ({
   };
 
   const cardStyle = {
-    backgroundColor: 'var(--card)',
+    backgroundColor: 'var(--card-bg-solid)',
     borderRadius: 'var(--radius-lg)',
     border: '1px solid var(--border)',
     boxShadow: 'var(--shadow-md)',
@@ -35,7 +35,7 @@ const Card = ({
     <div
       onClick={onClick}
       style={cardStyle}
-      className={`card-component ${hoverable ? 'card-hover' : ''} ${className}`}
+      className={`card-component glass-card ${hoverable ? 'card-hover' : ''} ${className}`}
       {...props}
     >
       {children}

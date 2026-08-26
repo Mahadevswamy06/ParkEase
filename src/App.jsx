@@ -14,27 +14,24 @@ import AdminLayout from './layouts/AdminLayout';
 
 // Public Pages
 import LandingPage from './pages/public/LandingPage';
-import AboutPage from './pages/public/AboutPage';
-import ContactPage from './pages/public/ContactPage';
 import LoginPage from './pages/public/LoginPage';
 import RegisterPage from './pages/public/RegisterPage';
 import NotFoundPage from './pages/public/NotFoundPage';
 
 // User Pages
 import UserDashboard from './pages/user/UserDashboard';
-import ParkingLocations from './pages/user/ParkingLocations';
+import FindParking from './pages/user/FindParking';
 import ParkingDetails from './pages/user/ParkingDetails';
 import BookingHistory from './pages/user/BookingHistory';
-import ProfilePage from './pages/user/ProfilePage';
-import SettingsPage from './pages/user/SettingsPage';
+import Vehicles from './pages/user/Vehicles';
+import UserProfile from './pages/user/UserProfile';
+import Notifications from './pages/user/Notifications';
+import CheckInCheckout from './pages/user/CheckInCheckout';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ManageLocations from './pages/admin/ManageLocations';
 import ManageSlots from './pages/admin/ManageSlots';
-import ManageUsers from './pages/admin/ManageUsers';
-import ManageBookings from './pages/admin/ManageBookings';
-import ReportsPage from './pages/admin/ReportsPage';
 
 function App() {
   return (
@@ -47,8 +44,8 @@ function App() {
                 {/* Public Routes */}
                 <Route element={<PublicLayout />}>
                   <Route path="/" element={<LandingPage />} />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/parking" element={<FindParking />} />
+                  <Route path="/parking/:id" element={<ParkingDetails />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<RegisterPage />} />
                 </Route>
@@ -56,11 +53,11 @@ function App() {
                 {/* User Dashboard & Reservation Routes */}
                 <Route element={<UserLayout />}>
                   <Route path="/user/dashboard" element={<UserDashboard />} />
-                  <Route path="/parking" element={<ParkingLocations />} />
-                  <Route path="/parking/:id" element={<ParkingDetails />} />
                   <Route path="/user/bookings" element={<BookingHistory />} />
-                  <Route path="/user/profile" element={<ProfilePage />} />
-                  <Route path="/user/settings" element={<SettingsPage />} />
+                  <Route path="/user/vehicles" element={<Vehicles />} />
+                  <Route path="/user/notifications" element={<Notifications />} />
+                  <Route path="/user/profile" element={<UserProfile />} />
+                  <Route path="/user/kiosk" element={<CheckInCheckout />} />
                 </Route>
 
                 {/* Admin Portal Routes */}
@@ -68,9 +65,6 @@ function App() {
                   <Route path="/admin" element={<AdminDashboard />} />
                   <Route path="/admin/locations" element={<ManageLocations />} />
                   <Route path="/admin/slots" element={<ManageSlots />} />
-                  <Route path="/admin/users" element={<ManageUsers />} />
-                  <Route path="/admin/bookings" element={<ManageBookings />} />
-                  <Route path="/admin/reports" element={<ReportsPage />} />
                 </Route>
 
                 {/* Catch-all 404 Route */}

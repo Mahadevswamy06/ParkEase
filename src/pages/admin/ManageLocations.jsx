@@ -1,226 +1,183 @@
 import React, { useState } from 'react';
-import { Plus, Edit2, Trash2, MapPin, Search } from 'lucide-react';
-import Card from '../../components/Card';
+import { MapPin, Plus, Edit2, Trash2, CheckCircle } from 'lucide-react';
 import Button from '../../components/Button';
-import Input from '../../components/Input';
-import StatusBadge from '../../components/StatusBadge';
-import Modal from '../../components/Modal';
-import SearchBar from '../../components/SearchBar';
 import { useParking } from '../../context/ParkingContext';
-import { useToast } from '../../context/ToastContext';
-import { formatCurrency } from '../../utils/formatters';
 
 const ManageLocations = () => {
-  const { locations, addLocation, updateLocation, deleteLocation } = useParking();
-  const { addToast } = useToast();
+  const { locations, addLocation, deleteLocation } = useParking();
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [editingLoc, setEditingLoc] = useState(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [name, setName] = useState('');
+  const [city, setCity] = useState('Bengaluru');
+  const [address, setAddress] = useState('');
+  const [pricePerHour, setPricePerHour] = useState(50);
+  const [totalSlots, setTotalSlots] = useState(40);
+  const [image, setImage] = useState('https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&w=800&q=80');
 
-  const [formData, setFormData] = useState({
-    name: '',
-    address: '',
-    city: 'New York',
-    pricePerHour: 8.50,
-    totalSlots: 40,
-    image: 'https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&w=800&q=80',
-    description: ''
-  });
-
-  const filteredLocations = locations.filter(loc =>
-    loc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    loc.city.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleAddSubmit = (e) => {
+  const handleCreate = (e) => {
     e.preventDefault();
-    if (editingLoc) {
-      updateLocation(editingLoc.id, formData);
-      addToast('Location updated successfully.', 'success');
-      setEditingLoc(null);
-    } else {
-      addLocation(formData);
-      addToast('New parking location created successfully!', 'success');
-    }
-    setIsAddModalOpen(false);
-    setFormData({
-      name: '',
-      address: '',
-      city: 'New York',
-      pricePerHour: 8.50,
-      totalSlots: 40,
-      image: 'https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&w=800&q=80',
-      description: ''
-    });
-  };
+    if (!name || !address) return;
 
-  const handleEditClick = (loc) => {
-    setEditingLoc(loc);
-    setFormData({
-      name: loc.name,
-      address: loc.address,
-      city: loc.city,
-      pricePerHour: loc.pricePerHour,
-      totalSlots: loc.totalSlots,
-      image: loc.image,
-      description: loc.description || ''
+    addLocation({
+      name,
+      city,
+      address,
+      pricePerHour: Number(pricePerHour),
+      totalSlots: Number(totalSlots),
+      image
     });
-    setIsAddModalOpen(true);
-  };
 
-  const handleDelete = (id, name) => {
-    if (window.confirm(`Are you sure you want to delete ${name}?`)) {
-      deleteLocation(id);
-      addToast(`${name} deleted.`, 'warning');
-    }
+    setName('');
+    setAddress('');
+    setIsAdding(false);
   };
 
   return (
-    <div className="manage-locations-page animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text)' }}>Manage Parking Locations</h1>
-          <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-            Add, update, or remove enterprise parking facilities across regions.
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.02em' }}>
+            Parking Locations & Garages
+          </h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+            Manage parking facilities, hourly tariffs, and slot capacity limits
           </p>
         </div>
 
-        <Button variant="primary" size="md" icon={Plus} onClick={() => { setEditingLoc(null); setIsAddModalOpen(true); }}>
-          Add New Facility
+        <Button variant="primary" size="sm" onClick={() => setIsAdding(!isAdding)} icon={Plus}>
+          Add Parking Location
         </Button>
       </div>
 
-      <Card padding="md">
-        <SearchBar
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search by facility name or city..."
-        />
-      </Card>
+      {/* Create Location Form */}
+      {isAdding && (
+        <div className="clean-card" style={{ padding: '1.5rem', backgroundColor: 'var(--primary-light)', borderColor: 'var(--primary-border)' }}>
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text)', marginBottom: '1rem' }}>
+            Register New Parking Facility
+          </h3>
 
-      <Card padding="none">
+          <form onSubmit={handleCreate} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', display: 'block', marginBottom: '0.35rem' }}>
+                Facility Name *
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Orion Mall Multi-Level Parking"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                style={{ width: '100%' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', display: 'block', marginBottom: '0.35rem' }}>
+                Target City *
+              </label>
+              <select value={city} onChange={(e) => setCity(e.target.value)} style={{ width: '100%' }}>
+                <option value="Bengaluru">Bengaluru</option>
+                <option value="Mumbai">Mumbai</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Pune">Pune</option>
+                <option value="Hyderabad">Hyderabad</option>
+                <option value="Chennai">Chennai</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', display: 'block', marginBottom: '0.35rem' }}>
+                Hourly Price (₹/hr) *
+              </label>
+              <input
+                type="number"
+                value={pricePerHour}
+                onChange={(e) => setPricePerHour(e.target.value)}
+                required
+                style={{ width: '100%' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', display: 'block', marginBottom: '0.35rem' }}>
+                Total Slot Capacity *
+              </label>
+              <input
+                type="number"
+                value={totalSlots}
+                onChange={(e) => setTotalSlots(e.target.value)}
+                required
+                style={{ width: '100%' }}
+              />
+            </div>
+
+            <div style={{ gridColumn: 'span 2' }}>
+              <label style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', display: 'block', marginBottom: '0.35rem' }}>
+                Street Address *
+              </label>
+              <input
+                type="text"
+                placeholder="Full address string"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                required
+                style={{ width: '100%' }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'end', gap: '0.5rem' }}>
+              <Button type="submit" variant="primary" size="md" fullWidth>
+                Save Facility
+              </Button>
+              <Button type="button" variant="outline" size="md" onClick={() => setIsAdding(false)}>
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Locations Table */}
+      <div className="clean-card" style={{ padding: '1.5rem' }}>
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
             <thead>
-              <tr style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid var(--border)', color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase' }}>
-                <th style={{ padding: '1rem 1.25rem' }}>Facility</th>
-                <th style={{ padding: '1rem 1.25rem' }}>City</th>
-                <th style={{ padding: '1rem 1.25rem' }}>Capacity</th>
-                <th style={{ padding: '1rem 1.25rem' }}>Rate/hr</th>
-                <th style={{ padding: '1rem 1.25rem' }}>Status</th>
-                <th style={{ padding: '1rem 1.25rem', textAlign: 'right' }}>Actions</th>
+              <tr style={{ borderBottom: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                <th style={{ padding: '0.75rem' }}>Facility Name</th>
+                <th style={{ padding: '0.75rem' }}>City</th>
+                <th style={{ padding: '0.75rem' }}>Hourly Rate</th>
+                <th style={{ padding: '0.75rem' }}>Total Bays</th>
+                <th style={{ padding: '0.75rem' }}>Available Bays</th>
+                <th style={{ padding: '0.75rem', textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredLocations.map((loc) => (
+              {locations.map((loc) => (
                 <tr key={loc.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                  <td style={{ padding: '1rem 1.25rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                      <img src={loc.image} alt={loc.name} style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', objectFit: 'cover' }} />
-                      <div>
-                        <div style={{ fontWeight: 700, color: 'var(--text)' }}>{loc.name}</div>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{loc.address}</div>
-                      </div>
-                    </div>
+                  <td style={{ padding: '0.85rem 0.75rem', fontWeight: 700, color: 'var(--text)' }}>
+                    <div>{loc.name}</div>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{loc.address}</div>
                   </td>
-                  <td style={{ padding: '1rem 1.25rem', fontWeight: 600 }}>{loc.city}</td>
-                  <td style={{ padding: '1rem 1.25rem' }}>
-                    <span style={{ fontWeight: 700, color: 'var(--primary)' }}>{loc.availableSlots}</span> / {loc.totalSlots} free
+                  <td style={{ padding: '0.85rem 0.75rem', color: 'var(--text-secondary)' }}>{loc.city}</td>
+                  <td style={{ padding: '0.85rem 0.75rem', fontWeight: 700, color: 'var(--primary)' }}>₹{loc.pricePerHour}/hr</td>
+                  <td style={{ padding: '0.85rem 0.75rem' }}>{loc.totalSlots}</td>
+                  <td style={{ padding: '0.85rem 0.75rem', fontWeight: 700, color: loc.availableSlots > 0 ? 'var(--success)' : 'var(--danger)' }}>
+                    {loc.availableSlots}
                   </td>
-                  <td style={{ padding: '1rem 1.25rem', fontWeight: 800 }}>{formatCurrency(loc.pricePerHour)}</td>
-                  <td style={{ padding: '1rem 1.25rem' }}>
-                    <StatusBadge status={loc.isOpen ? 'open' : 'closed'} size="sm" />
-                  </td>
-                  <td style={{ padding: '1rem 1.25rem', textAlign: 'right' }}>
-                    <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                      <Button variant="ghost" size="sm" icon={Edit2} onClick={() => handleEditClick(loc)}>
-                        Edit
-                      </Button>
-                      <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDelete(loc.id, loc.name)}>
-                        Delete
-                      </Button>
-                    </div>
+                  <td style={{ padding: '0.85rem 0.75rem', textAlign: 'right' }}>
+                    <button
+                      onClick={() => deleteLocation(loc.id)}
+                      style={{ border: 'none', background: 'transparent', color: 'var(--danger)', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600 }}
+                    >
+                      Remove
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </Card>
-
-      {/* Add / Edit Location Modal */}
-      <Modal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        title={editingLoc ? "Edit Facility Details" : "Add New Parking Facility"}
-        description="Enter garage metadata, pricing, and initial slot capacity."
-      >
-        <form onSubmit={handleAddSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <Input
-            label="Facility Name"
-            placeholder="e.g. Skyline Central Deck"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-          />
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <Input
-              label="Street Address"
-              placeholder="e.g. 100 Main St"
-              value={formData.address}
-              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              required
-            />
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-              <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text)' }}>City</label>
-              <select
-                value={formData.city}
-                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                style={{ height: '42px', padding: '0 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', outline: 'none' }}
-              >
-                <option value="New York">New York</option>
-                <option value="San Francisco">San Francisco</option>
-                <option value="Los Angeles">Los Angeles</option>
-              </select>
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <Input
-              label="Price Per Hour ($)"
-              type="number"
-              step="0.5"
-              value={formData.pricePerHour}
-              onChange={(e) => setFormData({ ...formData, pricePerHour: Number(e.target.value) })}
-              required
-            />
-
-            <Input
-              label="Total Capacity Slots"
-              type="number"
-              value={formData.totalSlots}
-              onChange={(e) => setFormData({ ...formData, totalSlots: Number(e.target.value) })}
-              required
-            />
-          </div>
-
-          <Input
-            label="Image URL"
-            value={formData.image}
-            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-          />
-
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
-            <Button variant="secondary" onClick={() => setIsAddModalOpen(false)}>Cancel</Button>
-            <Button type="submit" variant="primary">
-              {editingLoc ? "Save Changes" : "Create Location"}
-            </Button>
-          </div>
-        </form>
-      </Modal>
+      </div>
     </div>
   );
 };

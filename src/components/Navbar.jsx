@@ -1,28 +1,18 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import {
-  Car,
-  Search,
-  User,
-  LogOut,
-  Shield,
-  Sun,
-  Moon,
-  Menu,
-  X,
-  Sparkles
-} from 'lucide-react';
+import { Car, Search, User, LogOut, Shield, Sun, Moon, Bell, Sparkles, Menu, X } from 'lucide-react';
 import Button from './Button';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useParking } from '../context/ParkingContext';
 
 const Navbar = () => {
   const { isAuthenticated, currentUser, role, logout, setRole } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { unreadNotifCount } = useParking();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const handleLogout = () => {
@@ -30,10 +20,10 @@ const Navbar = () => {
     navigate('/login');
   };
 
-  const handleRoleChange = (e) => {
-    const newRole = e.target.value;
-    setRole(newRole);
-    if (newRole === 'admin') {
+  const handleRoleSwitch = (e) => {
+    const selected = e.target.value;
+    setRole(selected);
+    if (selected === 'admin') {
       navigate('/admin');
     } else {
       navigate('/user/dashboard');
@@ -45,7 +35,7 @@ const Navbar = () => {
       <div style={{
         maxWidth: '1380px',
         margin: '0 auto',
-        padding: '0.85rem 1.5rem',
+        padding: '0.75rem 1.5rem',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between'
@@ -53,67 +43,75 @@ const Navbar = () => {
         {/* Brand Logo */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none' }}>
           <div style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '12px',
-            background: 'var(--gradient-primary)',
+            width: '36px',
+            height: '36px',
+            borderRadius: '10px',
+            backgroundColor: 'var(--primary)',
             color: '#FFFFFF',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             fontWeight: 800,
-            fontSize: '1.35rem',
-            boxShadow: 'var(--gradient-glow)'
+            fontSize: '1.2rem',
+            boxShadow: 'var(--shadow-xs)'
           }}>
             P
           </div>
-          <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.02em' }}>
-            ParkEase<span style={{ color: 'var(--primary)', marginLeft: '2px' }}>.</span>
+          <span style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.02em' }}>
+            ParkEase<span style={{ color: 'var(--primary)' }}>.</span>
           </span>
         </Link>
 
-        {/* Rearranged Desktop Navigation Links (How It Works & About Us removed from Header) */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '2rem' }} className="desktop-nav">
+        {/* Navigation Links */}
+        <nav style={{ display: 'flex', alignItems: 'center', gap: '1.75rem' }} className="desktop-nav">
           <Link
             to="/"
-            className={`nav-link-hover ${location.pathname === '/' ? 'active' : ''}`}
-            style={{ fontSize: '0.925rem', fontWeight: 600 }}
+            style={{
+              fontSize: '0.9rem',
+              fontWeight: location.pathname === '/' ? 700 : 500,
+              color: location.pathname === '/' ? 'var(--primary)' : 'var(--text-secondary)',
+              textDecoration: 'none'
+            }}
           >
             Home
           </Link>
 
           <Link
             to="/parking"
-            className={`nav-link-hover ${location.pathname === '/parking' ? 'active' : ''}`}
-            style={{ fontSize: '0.925rem', fontWeight: 600 }}
+            style={{
+              fontSize: '0.9rem',
+              fontWeight: location.pathname === '/parking' ? 700 : 500,
+              color: location.pathname === '/parking' ? 'var(--primary)' : 'var(--text-secondary)',
+              textDecoration: 'none'
+            }}
           >
             Find Parking
           </Link>
 
-          <Link
-            to="/contact"
-            className={`nav-link-hover ${location.pathname === '/contact' ? 'active' : ''}`}
-            style={{ fontSize: '0.925rem', fontWeight: 600 }}
-          >
-            Contact
-          </Link>
-
-          {/* Logged in Quick Links */}
-          {isAuthenticated && role === 'user' && (
+          {isAuthenticated && role === 'driver' && (
             <>
               <Link
                 to="/user/dashboard"
-                className={`nav-link-hover ${location.pathname === '/user/dashboard' ? 'active' : ''}`}
-                style={{ fontSize: '0.925rem', fontWeight: 600 }}
+                style={{
+                  fontSize: '0.9rem',
+                  fontWeight: location.pathname === '/user/dashboard' ? 700 : 500,
+                  color: location.pathname === '/user/dashboard' ? 'var(--primary)' : 'var(--text-secondary)',
+                  textDecoration: 'none'
+                }}
               >
                 Dashboard
               </Link>
+
               <Link
-                to="/user/profile"
-                className={`nav-link-hover ${location.pathname === '/user/profile' ? 'active' : ''}`}
-                style={{ fontSize: '0.925rem', fontWeight: 600 }}
+                to="/user/bookings"
+                style={{
+                  fontSize: '0.9rem',
+                  fontWeight: location.pathname === '/user/bookings' ? 700 : 500,
+                  color: location.pathname === '/user/bookings' ? 'var(--primary)' : 'var(--text-secondary)',
+                  textDecoration: 'none'
+                }}
               >
-                Profile
+                My Bookings
               </Link>
             </>
           )}
@@ -121,33 +119,77 @@ const Navbar = () => {
           {isAuthenticated && role === 'admin' && (
             <Link
               to="/admin"
-              className={`nav-link-hover ${location.pathname.startsWith('/admin') ? 'active' : ''}`}
-              style={{ fontSize: '0.925rem', fontWeight: 600 }}
+              style={{
+                fontSize: '0.9rem',
+                fontWeight: location.pathname.startsWith('/admin') ? 700 : 500,
+                color: location.pathname.startsWith('/admin') ? 'var(--primary)' : 'var(--text-secondary)',
+                textDecoration: 'none'
+              }}
             >
               Admin Portal
             </Link>
           )}
         </nav>
 
-        {/* Right Section Actions: Role Switcher, Theme Toggle & Auth Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-          
+        {/* Right Section Actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          {/* Notification Bell Badge */}
+          {isAuthenticated && (
+            <Link
+              to="/user/notifications"
+              style={{
+                position: 'relative',
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                backgroundColor: 'var(--surface)',
+                border: '1px solid var(--border)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--text)',
+                textDecoration: 'none'
+              }}
+            >
+              <Bell size={18} />
+              {unreadNotifCount > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: '-2px',
+                  right: '-2px',
+                  width: '18px',
+                  height: '18px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--danger)',
+                  color: '#FFFFFF',
+                  fontSize: '0.7rem',
+                  fontWeight: 800,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '2px solid var(--surface)'
+                }}>
+                  {unreadNotifCount}
+                </span>
+              )}
+            </Link>
+          )}
+
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
             aria-label="Toggle Theme"
             style={{
-              width: '38px',
-              height: '38px',
+              width: '36px',
+              height: '36px',
               borderRadius: '50%',
-              backgroundColor: 'var(--card-bg-solid)',
+              backgroundColor: 'var(--surface)',
               border: '1px solid var(--border)',
               color: 'var(--text)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'pointer',
-              transition: 'var(--transition)'
+              cursor: 'pointer'
             }}
           >
             {theme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
@@ -158,19 +200,17 @@ const Navbar = () => {
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '0.3rem',
-              padding: '0.3rem 0.75rem',
+              gap: '0.25rem',
+              padding: '0.25rem 0.65rem',
               borderRadius: '9999px',
-              backgroundColor: 'var(--card-bg-solid)',
+              backgroundColor: 'var(--surface)',
               border: '1px solid var(--border)',
-              fontSize: '0.78rem',
-              color: 'var(--text-secondary)',
-              fontWeight: 600
+              fontSize: '0.78rem'
             }}>
-              <Sparkles size={13} color="var(--primary)" />
+              <Sparkles size={12} color="var(--primary)" />
               <select
                 value={role}
-                onChange={handleRoleChange}
+                onChange={handleRoleSwitch}
                 style={{
                   border: 'none',
                   background: 'transparent',
@@ -178,11 +218,12 @@ const Navbar = () => {
                   fontSize: '0.78rem',
                   fontWeight: 700,
                   outline: 'none',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  padding: 0
                 }}
               >
-                <option value="user" style={{ background: 'var(--card-bg-solid)', color: 'var(--text)' }}>Role: USER</option>
-                <option value="admin" style={{ background: 'var(--card-bg-solid)', color: 'var(--text)' }}>Role: ADMIN</option>
+                <option value="driver">Driver View</option>
+                <option value="admin">Admin View</option>
               </select>
             </div>
           )}
@@ -199,13 +240,13 @@ const Navbar = () => {
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
-                  padding: '2px'
+                  padding: 0
                 }}
               >
                 <img
                   src={currentUser?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80"}
                   alt={currentUser?.name}
-                  style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }}
+                  style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }}
                 />
               </button>
 
@@ -215,9 +256,9 @@ const Navbar = () => {
                   top: '115%',
                   right: 0,
                   width: '210px',
-                  backgroundColor: 'var(--card-bg-solid)',
+                  backgroundColor: 'var(--surface)',
                   borderRadius: 'var(--radius-md)',
-                  boxShadow: 'var(--shadow-lg)',
+                  boxShadow: 'var(--shadow-xl)',
                   border: '1px solid var(--border)',
                   padding: '0.5rem',
                   zIndex: 1050,
@@ -226,8 +267,8 @@ const Navbar = () => {
                   gap: '0.25rem'
                 }}>
                   <div style={{ padding: '0.5rem', borderBottom: '1px solid var(--border)', marginBottom: '0.25rem' }}>
-                    <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text)' }}>{currentUser?.name}</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{currentUser?.email}</div>
+                    <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text)' }}>{currentUser?.name}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{currentUser?.email}</div>
                   </div>
                   <Link
                     to="/user/profile"
@@ -239,7 +280,8 @@ const Navbar = () => {
                       padding: '0.5rem',
                       borderRadius: 'var(--radius-sm)',
                       color: 'var(--text)',
-                      fontSize: '0.85rem'
+                      fontSize: '0.85rem',
+                      textDecoration: 'none'
                     }}
                   >
                     <User size={15} /> My Profile
@@ -267,43 +309,21 @@ const Navbar = () => {
               )}
             </div>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-              <Link to="/login">
-                <Button variant="outline" size="sm" style={{ borderRadius: '9999px', padding: '0.45rem 1.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Link to="/login" style={{ textDecoration: 'none' }}>
+                <Button variant="outline" size="sm">
                   Log In
                 </Button>
               </Link>
-              <Link to="/register">
-                <button className="btn-gradient" style={{ padding: '0.5rem 1.35rem', borderRadius: '9999px', fontSize: '0.875rem', cursor: 'pointer' }}>
+              <Link to="/register" style={{ textDecoration: 'none' }}>
+                <Button variant="primary" size="sm">
                   Sign Up
-                </button>
+                </Button>
               </Link>
             </div>
           )}
-
-          {/* Mobile Hamburger Toggle */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="mobile-toggle"
-            style={{
-              display: 'none',
-              background: 'none',
-              border: 'none',
-              color: 'var(--text)',
-              cursor: 'pointer'
-            }}
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
         </div>
       </div>
-
-      <style>{`
-        @media (max-width: 768px) {
-          .desktop-nav { display: none !important; }
-          .mobile-toggle { display: block !important; }
-        }
-      `}</style>
     </header>
   );
 };

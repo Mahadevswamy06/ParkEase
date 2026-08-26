@@ -1,51 +1,50 @@
 import React from 'react';
-import { Inbox } from 'lucide-react';
+import { SearchX, Inbox, ArrowRight } from 'lucide-react';
 import Button from './Button';
 
 const EmptyState = ({
-  icon: Icon = Inbox,
   title = "No results found",
-  description = "We couldn't find anything matching your request. Try adjusting your filters or search criteria.",
-  actionLabel,
+  description = "Try adjusting your search query or clear filters to discover available parking locations.",
+  icon: Icon = SearchX,
+  actionText,
   onAction
 }) => {
   return (
-    <div style={{
-      padding: '3.5rem 1.5rem',
+    <div className="clean-card" style={{
+      padding: '3rem 2rem',
       textAlign: 'center',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#FFFFFF',
-      borderRadius: 'var(--radius-lg)',
-      border: '1px border var(--border)',
-      boxShadow: 'var(--shadow-sm)'
+      gap: '1rem',
+      margin: '1.5rem 0'
     }}>
       <div style={{
-        width: '64px',
-        height: '64px',
+        width: '56px',
+        height: '56px',
         borderRadius: '50%',
-        backgroundColor: '#F1F5F9',
-        color: 'var(--text-secondary)',
+        backgroundColor: 'var(--bg-subtle)',
+        color: 'var(--text-muted)',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: '1rem'
+        justifyContent: 'center'
       }}>
-        <Icon size={32} />
+        <Icon size={28} />
       </div>
 
-      <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.4rem' }}>
-        {title}
-      </h3>
-      <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', maxWidth: '420px', marginBottom: actionLabel ? '1.5rem' : 0 }}>
-        {description}
-      </p>
+      <div style={{ maxWidth: '420px' }}>
+        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.35rem' }}>
+          {title}
+        </h3>
+        <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
+          {description}
+        </p>
+      </div>
 
-      {actionLabel && onAction && (
-        <Button variant="primary" onClick={onAction}>
-          {actionLabel}
+      {actionText && onAction && (
+        <Button variant="outline" size="sm" onClick={onAction} style={{ marginTop: '0.5rem' }}>
+          {actionText} <ArrowRight size={14} />
         </Button>
       )}
     </div>

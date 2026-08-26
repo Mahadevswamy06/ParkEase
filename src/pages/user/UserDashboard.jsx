@@ -1,329 +1,243 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import {
-  Car,
-  Clock,
-  MapPin,
-  Calendar,
-  CreditCard,
-  PlusCircle,
-  QrCode,
-  ArrowRight,
-  ShieldCheck,
-  CheckCircle,
-  TrendingUp,
-  Heart,
-  Search,
-  UserCheck,
-  Headphones,
-  Check,
-  X,
-  FileText
-} from 'lucide-react';
-import Card from '../../components/Card';
+import { useNavigate, Link } from 'react-router-dom';
+import { Search, MapPin, Calendar, Clock, Car, Zap, ArrowRight, ShieldCheck, CheckCircle2, Navigation } from 'lucide-react';
 import Button from '../../components/Button';
-import StatusBadge from '../../components/StatusBadge';
-import Modal from '../../components/Modal';
-import { useAuth } from '../../context/AuthContext';
+import { CardSkeleton } from '../../components/common/Skeleton';
+import BookingModal from '../../components/booking/BookingModal';
+import CheckInCheckout from './CheckInCheckout';
 import { useParking } from '../../context/ParkingContext';
-import { useToast } from '../../context/ToastContext';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import { useAuth } from '../../context/AuthContext';
 
 const UserDashboard = () => {
+  const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const { bookings, locations, cancelBooking } = useParking();
-  const { addToast } = useToast();
+  const { filteredLocations, bookings, loading, lastUpdatedTime, setSearchQuery } = useParking();
 
-  const [qrModalBooking, setQrModalBooking] = useState(null);
-  const [extendModalBooking, setExtendModalBooking] = useState(null);
-  const [extraHours, setExtraHours] = useState(1);
+  const [dashSearch, setDashSearch] = useState('');
+  const [dashDate, setDashDate] = useState(new Date().toISOString().split('T')[0]);
+  const [dashTime, setDashTime] = useState('10:00 AM');
+  const [dashDuration, setDashDuration] = useState(2);
+  const [selectedLocForBooking, setSelectedLocForBooking] = useState(null);
 
-  // Active & Upcoming Bookings
-  const activeBooking = bookings.find(b => b.status === 'active');
-  const upcomingBookings = bookings.filter(b => b.status === 'upcoming');
-  
-  const totalSpent = bookings
-    .filter(b => b.status !== 'cancelled')
-    .reduce((acc, b) => acc + b.totalAmount, 0);
+  const activeBooking = bookings.find(b => b.status === 'active' || b.status === 'upcoming');
 
-  const handleCancel = (bookingId) => {
-    if (window.confirm("Are you sure you want to cancel this booking?")) {
-      cancelBooking(bookingId);
-      addToast('Booking cancelled successfully.', 'warning', 'Cancelled');
+  const handleDashSearchSubmit = (e) => {
+    e.preventDefault();
+    if (dashSearch) {
+      setSearchQuery(dashSearch);
     }
-  };
-
-  const handleExtendSubmit = () => {
-    if (!extendModalBooking) return;
-    addToast(`Session extended by ${extraHours} hour(s). Updated end time logged.`, 'success', 'Session Extended');
-    setExtendModalBooking(null);
+    navigate('/parking');
   };
 
   return (
-    <div className="user-dashboard animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-      
-      {/* Top Banner Greeting Header */}
-      <div style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        gap: '1rem',
-        backgroundColor: '#FFFFFF',
-        padding: '1.75rem 2rem',
-        borderRadius: '20px',
-        border: '1px solid var(--border)',
-        boxShadow: 'var(--shadow-sm)'
-      }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      {/* Top Greeting Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text)' }}>
-            Dashboard
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.02em' }}>
+            Good morning, {currentUser?.name?.split(' ')[0] || 'Mahadev'} 👋
           </h1>
-          <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
-            <strong>Good Morning, {currentUser?.name || 'Mahadev'}! 👋</strong> Here's what's happening with your parking today.
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
+            Where are you parking today?
           </p>
         </div>
 
-        <Link to="/parking">
-          <Button variant="primary" size="md" style={{ borderRadius: '10px', backgroundColor: '#2563EB', padding: '0.65rem 1.4rem' }}>
-            + Book New Parking
-          </Button>
-        </Link>
+        <div className="badge badge-primary" style={{ padding: '0.4rem 0.85rem', fontSize: '0.8rem' }}>
+          <Zap size={13} /> {lastUpdatedTime}
+        </div>
       </div>
 
-      {/* 4 Stat Cards Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
-        
-        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.25rem', boxShadow: 'var(--shadow-sm)' }}>
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Total Bookings</div>
-          <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text)', margin: '0.2rem 0' }}>24</div>
-          <div style={{ fontSize: '0.78rem', color: '#10B981', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <TrendingUp size={14} /> 12% this month
-          </div>
-        </div>
-
-        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.25rem', boxShadow: 'var(--shadow-sm)' }}>
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Active Bookings</div>
-          <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text)', margin: '0.2rem 0' }}>2</div>
-          <div style={{ fontSize: '0.78rem', color: '#10B981', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-            <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#10B981' }}></span> Currently active
-          </div>
-        </div>
-
-        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.25rem', boxShadow: 'var(--shadow-sm)' }}>
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Total Spent</div>
-          <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text)', margin: '0.2rem 0' }}>₹2,450</div>
-          <div style={{ fontSize: '0.78rem', color: '#10B981', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <TrendingUp size={14} /> 8% this month
-          </div>
-        </div>
-
-        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.25rem', boxShadow: 'var(--shadow-sm)' }}>
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Saved Locations</div>
-          <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text)', margin: '0.2rem 0' }}>6</div>
-          <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <Heart size={13} color="#EF4444" fill="#EF4444" /> Your favorites
-          </div>
-        </div>
-
-      </div>
-
-      {/* Grid: Upcoming Booking & Recent Activity */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem' }}>
-        
-        {/* Upcoming Booking Card */}
-        <div style={{ border: '1px solid var(--border)', borderRadius: '20px', padding: '1.5rem', backgroundColor: '#FFFFFF', boxShadow: 'var(--shadow-sm)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text)' }}>Upcoming Booking</h3>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, backgroundColor: '#ECFDF5', color: '#059669', padding: '0.25rem 0.65rem', borderRadius: '9999px' }}>
-              ✓ Confirmed
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', padding: '1rem', backgroundColor: 'var(--bg)', borderRadius: '14px', border: '1px solid var(--border)', marginBottom: '1.25rem' }}>
-            <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      {/* Active Booking Banner Widget (If Active Booking Exists) */}
+      {activeBooking && (
+        <div className="clean-card" style={{
+          padding: '1.5rem',
+          backgroundColor: 'var(--primary-light)',
+          borderColor: 'var(--primary-border)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '1rem'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--primary)', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Car size={24} />
             </div>
             <div>
-              <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text)' }}>Connaught Place Central Deck</h4>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.1rem' }}>Slot A12 • DL-01-AB-1234</p>
+              <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--primary)', textTransform: 'uppercase' }}>
+                Active Reservation #{activeBooking.bookingCode}
+              </div>
+              <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text)' }}>
+                {activeBooking.parkingName} (Slot {activeBooking.slotId})
+              </div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                Vehicle: {activeBooking.vehicleNumber} • Entry: {activeBooking.startTime}
+              </div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem', fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <Calendar size={16} color="#2563EB" /> 10 Aug 2026
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <Clock size={16} color="#2563EB" /> 10:00 AM - 01:00 PM (3 hrs)
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1.25rem', borderTop: '1px solid var(--border)' }}>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Total Amount</span>
-              <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text)' }}>₹240.00</div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '0.65rem' }}>
-              <Button variant="outline" size="sm" style={{ borderRadius: '8px' }}>
-                View Details
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <Link to="/user/bookings" style={{ textDecoration: 'none' }}>
+              <Button variant="primary" size="sm">
+                View Digital Pass
               </Button>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => setQrModalBooking(upcomingBookings[0] || activeBooking || { bookingCode: 'PARK-CP-8842', slotId: 'A12', locationName: 'Connaught Place Central Deck', vehicleNumber: 'DL-01-AB-1234' })}
-                style={{ borderRadius: '8px', backgroundColor: '#EFF6FF', color: '#2563EB', border: '1px solid #BFDBFE' }}
-              >
-                Get Pass (QR)
-              </Button>
-            </div>
+            </Link>
           </div>
         </div>
+      )}
 
-        {/* Recent Activity Card */}
-        <div style={{ border: '1px solid var(--border)', borderRadius: '20px', padding: '1.5rem', backgroundColor: '#FFFFFF', boxShadow: 'var(--shadow-sm)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text)' }}>Recent Activity</h3>
-            <Link to="/user/bookings" style={{ fontSize: '0.85rem', color: '#2563EB', fontWeight: 600 }}>View All</Link>
+      {/* Search Parking Card */}
+      <div className="clean-card" style={{ padding: '1.75rem' }}>
+        <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text)', marginBottom: '1rem' }}>
+          Search & Reserve Parking
+        </h2>
+
+        <form onSubmit={handleDashSearchSubmit} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr auto', gap: '1rem', alignItems: 'end' }} className="dash-search-grid">
+          <div>
+            <label style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', display: 'block', marginBottom: '0.35rem' }}>
+              Destination / City
+            </label>
+            <div style={{ position: 'relative' }}>
+              <input
+                type="text"
+                placeholder="e.g. Phoenix Marketcity, Whitefield"
+                value={dashSearch}
+                onChange={(e) => setDashSearch(e.target.value)}
+                style={{ width: '100%', paddingLeft: '2.4rem' }}
+              />
+              <MapPin size={18} color="var(--primary)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+            </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
-            
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#ECFDF5', color: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-                <Check size={18} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '0.925rem', fontWeight: 700, color: 'var(--text)' }}>Booking Confirmed</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Connaught Place • Slot A12</div>
-              </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Today, 9:30 AM</div>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#ECFDF5', color: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-                ₹
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '0.925rem', fontWeight: 700, color: 'var(--text)' }}>Payment Successful</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>₹240.00 Paid successfully</div>
-              </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Today, 9:30 AM</div>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#FEF2F2', color: '#EF4444', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-                <X size={18} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '0.925rem', fontWeight: 700, color: 'var(--text)' }}>Booking Cancelled</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>DLF Cyber Hub • Slot B08</div>
-              </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Yesterday, 6:20 PM</div>
-            </div>
-
+          <div>
+            <label style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', display: 'block', marginBottom: '0.35rem' }}>
+              Date
+            </label>
+            <input
+              type="date"
+              value={dashDate}
+              onChange={(e) => setDashDate(e.target.value)}
+              style={{ width: '100%' }}
+            />
           </div>
-        </div>
 
+          <div>
+            <label style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', display: 'block', marginBottom: '0.35rem' }}>
+              Start Time
+            </label>
+            <select value={dashTime} onChange={(e) => setDashTime(e.target.value)} style={{ width: '100%' }}>
+              <option value="08:00 AM">08:00 AM</option>
+              <option value="10:00 AM">10:00 AM</option>
+              <option value="12:00 PM">12:00 PM</option>
+              <option value="02:00 PM">02:00 PM</option>
+              <option value="06:00 PM">06:00 PM</option>
+            </select>
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', display: 'block', marginBottom: '0.35rem' }}>
+              Duration
+            </label>
+            <select value={dashDuration} onChange={(e) => setDashDuration(Number(e.target.value))} style={{ width: '100%' }}>
+              <option value={1}>1 Hour</option>
+              <option value={2}>2 Hours</option>
+              <option value={3}>3 Hours</option>
+              <option value={4}>4 Hours</option>
+              <option value={8}>8 Hours</option>
+            </select>
+          </div>
+
+          <Button type="submit" variant="primary" size="md" icon={Search} style={{ height: '42px' }}>
+            Search Parking
+          </Button>
+        </form>
       </div>
 
-      {/* Quick Actions Component Bar */}
-      <div style={{
-        backgroundColor: '#FFFFFF',
-        borderRadius: '20px',
-        border: '1px solid var(--border)',
-        padding: '1.5rem 1.75rem',
-        boxShadow: 'var(--shadow-sm)'
-      }}>
-        <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text)', marginBottom: '1.15rem' }}>Quick Actions</h3>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
-          <Link to="/parking" style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.9rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border)', backgroundColor: 'var(--bg)', transition: 'var(--transition)' }}>
-              <Search size={20} color="#2563EB" />
-              <div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text)' }}>Find Parking</div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Search nearby spots</div>
-              </div>
-            </div>
-          </Link>
+      {/* Nearby Parking Section */}
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <div>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text)' }}>
+              Nearby Parking Locations
+            </h2>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+              Showing real-time availability in your vicinity
+            </p>
+          </div>
 
-          <Link to="/user/bookings" style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.9rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border)', backgroundColor: 'var(--bg)', transition: 'var(--transition)' }}>
-              <Calendar size={20} color="#2563EB" />
-              <div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text)' }}>My Bookings</div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>View all bookings</div>
-              </div>
-            </div>
-          </Link>
-
-          <Link to="/user/profile" style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.9rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border)', backgroundColor: 'var(--bg)', transition: 'var(--transition)' }}>
-              <UserCheck size={20} color="#2563EB" />
-              <div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text)' }}>My Profile</div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Manage profile</div>
-              </div>
-            </div>
-          </Link>
-
-          <Link to="/user/settings" style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.9rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border)', backgroundColor: 'var(--bg)', transition: 'var(--transition)' }}>
-              <CreditCard size={20} color="#2563EB" />
-              <div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text)' }}>Wallet</div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Check balance</div>
-              </div>
-            </div>
-          </Link>
-
-          <Link to="/contact" style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.9rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border)', backgroundColor: 'var(--bg)', transition: 'var(--transition)' }}>
-              <Headphones size={20} color="#2563EB" />
-              <div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text)' }}>Support</div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Get help</div>
-              </div>
-            </div>
+          <Link to="/parking" style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--primary)', textDecoration: 'none' }}>
+            View all ({filteredLocations.length}) →
           </Link>
         </div>
-      </div>
 
-      {/* QR Code Pass Modal */}
-      <Modal
-        isOpen={!!qrModalBooking}
-        onClose={() => setQrModalBooking(null)}
-        title="Gate Access Pass (ANPR Backup)"
-        description="Scan this QR code at the entrance barrier scanner if automatic plate recognition camera is obstructed."
-      >
-        {qrModalBooking && (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '1.25rem', padding: '1rem 0' }}>
-            <div style={{
-              padding: '1.5rem',
-              backgroundColor: '#FFFFFF',
-              borderRadius: '16px',
-              border: '2px dashed #E2E8F0',
-              boxShadow: 'var(--shadow-sm)'
-            }}>
-              <QrCode size={180} color="#0F172A" />
-            </div>
+        {loading ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem' }}>
+            <CardSkeleton />
+            <CardSkeleton />
+            <CardSkeleton />
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem' }} className="nearby-grid">
+            {filteredLocations.slice(0, 6).map((loc) => (
+              <div key={loc.id} className="clean-card clean-card-hover" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ height: '150px', position: 'relative', overflow: 'hidden' }}>
+                  <img src={loc.image} alt={loc.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ position: 'absolute', top: '10px', right: '10px' }} className={`badge ${loc.availableSlots > 0 ? 'badge-success' : 'badge-danger'}`}>
+                    {loc.availableSlots > 0 ? `${loc.availableSlots} slots free` : 'Full'}
+                  </div>
+                </div>
 
-            <div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Access Pass Code</div>
-              <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#2563EB', letterSpacing: '0.05em' }}>{qrModalBooking.bookingCode}</div>
-              <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text)', marginTop: '0.5rem' }}>
-                Slot {qrModalBooking.slotId} • {qrModalBooking.locationName}
+                <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1 }}>
+                  <div>
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text)' }}>{loc.name}</h3>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                      <MapPin size={13} color="var(--primary)" /> {loc.address} ({loc.distance})
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem' }}>
+                    <span style={{ fontWeight: 800, color: 'var(--primary)', fontSize: '1.1rem' }}>₹{loc.pricePerHour}/hr</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>⭐ {loc.rating} ({loc.reviewsCount || 100})</span>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto', paddingTop: '0.5rem' }}>
+                    <Link to={`/parking/${loc.id}`} style={{ flex: 1, textDecoration: 'none' }}>
+                      <Button variant="outline" size="sm" fullWidth>
+                        Details
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      disabled={loc.availableSlots === 0}
+                      onClick={() => setSelectedLocForBooking(loc)}
+                      style={{ flex: 1 }}
+                    >
+                      Reserve
+                    </Button>
+                  </div>
+                </div>
               </div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
-                Vehicle: {qrModalBooking.vehicleNumber}
-              </div>
-            </div>
+            ))}
           </div>
         )}
-      </Modal>
+      </div>
 
+      {/* Booking Modal */}
+      {selectedLocForBooking && (
+        <BookingModal
+          location={selectedLocForBooking}
+          isOpen={!!selectedLocForBooking}
+          onClose={() => setSelectedLocForBooking(null)}
+        />
+      )}
+
+      <style>{`
+        @media (max-width: 900px) {
+          .dash-search-grid { grid-template-columns: 1fr !important; }
+          .nearby-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 };

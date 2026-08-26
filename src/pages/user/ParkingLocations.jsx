@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { MapPin, Star, Clock, Car, Filter, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, Star, Clock, Car, Filter, Zap, ChevronLeft, ChevronRight, Navigation, Activity } from 'lucide-react';
 import SearchBar from '../../components/SearchBar';
 import FilterPanel from '../../components/FilterPanel';
 import Card from '../../components/Card';
@@ -24,7 +24,11 @@ const ParkingLocations = () => {
     onlyAvailable,
     setOnlyAvailable,
     selectedAmenity,
-    setSelectedAmenity
+    setSelectedAmenity,
+    cityWeather,
+    fetchUserLiveLocation,
+    isGeolocating,
+    userLocation
   } = useParking();
 
   const [loading, setLoading] = useState(true);
@@ -58,11 +62,24 @@ const ParkingLocations = () => {
   return (
     <div className="parking-locations-page animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       {/* Page Header */}
-      <div>
-        <h1 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text)' }}>Parking Locations</h1>
-        <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-          Discover available garages, compare live hourly pricing, and reserve guaranteed spots.
-        </p>
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+        <div>
+          <h1 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text)' }}>Parking Locations</h1>
+          <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
+            Discover available garages with live IoT sensor availability, weather feeds, and real GPS routing.
+          </p>
+        </div>
+
+        <Button
+          variant="outline"
+          size="md"
+          icon={Navigation}
+          onClick={fetchUserLiveLocation}
+          disabled={isGeolocating}
+          style={{ borderRadius: '10px', borderColor: userLocation ? '#10B981' : 'var(--border)' }}
+        >
+          {isGeolocating ? 'Finding Live Location...' : userLocation ? '✓ GPS Distance Active' : '📍 Use My Live GPS'}
+        </Button>
       </div>
 
       {/* Main Grid with Sidebar Filter */}
@@ -93,7 +110,7 @@ const ParkingLocations = () => {
 
           {/* Results Summary */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-            <span>Showing <strong>{filteredLocations.length}</strong> parking location{filteredLocations.length === 1 ? '' : 's'}</span>
+            <span>Showing <strong>{filteredLocations.length}</strong> live parking garage{filteredLocations.length === 1 ? '' : 's'}</span>
             {(searchQuery || selectedCity !== 'All' || maxPrice < 25 || onlyAvailable || selectedAmenity !== 'All') && (
               <button
                 onClick={handleResetFilters}
@@ -116,98 +133,130 @@ const ParkingLocations = () => {
             />
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
-              {paginatedLocations.map((loc) => (
-                <Card key={loc.id} hoverable={true} padding="none">
-                  {/* Image & Status Badge */}
-                  <div style={{ position: 'relative', height: '190px' }}>
-                    <img
-                      src={loc.image}
-                      alt={loc.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                    <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', gap: '0.5rem' }}>
-                      <StatusBadge status={loc.isOpen ? "open" : "closed"}>
-                        {loc.isOpen ? "Open" : "Closed"}
-                      </StatusBadge>
-                    </div>
+              {paginatedLocations.map((loc) => {
+                const weather = cityWeather[loc.city] || { temp: '29°C', condition: 'Sunny', icon: '☀️' };
 
-                    <div style={{
-                      position: 'absolute',
-                      bottom: '12px',
-                      left: '12px',
-                      backgroundColor: 'rgba(15, 23, 42, 0.75)',
-                      backdropFilter: 'blur(4px)',
-                      color: '#FFFFFF',
-                      padding: '0.3rem 0.65rem',
-                      borderRadius: 'var(--radius-sm)',
-                      fontSize: '0.78rem',
-                      fontWeight: 600,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.3rem'
-                    }}>
-                      <MapPin size={13} color="#BFDBFE" />
-                      {loc.distance}
-                    </div>
-                  </div>
-
-                  {/* Card Content */}
-                  <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <div>
-                        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text)' }}>{loc.name}</h3>
-                        <p style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', marginTop: '2px' }}>{loc.address}</p>
+                return (
+                  <Card key={loc.id} hoverable={true} padding="none">
+                    {/* Image & Status Badges */}
+                    <div style={{ position: 'relative', height: '190px' }}>
+                      <img
+                        src={loc.image}
+                        alt={loc.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                      <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', gap: '0.5rem' }}>
+                        <StatusBadge status={loc.isOpen ? "open" : "closed"}>
+                          {loc.isOpen ? "Open 24/7" : "Closed"}
+                        </StatusBadge>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', backgroundColor: '#FFFBEB', padding: '0.2rem 0.5rem', borderRadius: 'var(--radius-sm)', border: '1px solid #FDE68A' }}>
-                        <Star size={14} fill="#F59E0B" color="#F59E0B" />
-                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#B45309' }}>{loc.rating}</span>
+
+                      {/* Weather Pill */}
+                      <div style={{
+                        position: 'absolute',
+                        top: '12px',
+                        left: '12px',
+                        backgroundColor: 'rgba(15, 23, 42, 0.75)',
+                        backdropFilter: 'blur(4px)',
+                        color: '#FFFFFF',
+                        padding: '0.3rem 0.65rem',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: '0.78rem',
+                        fontWeight: 600,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.3rem'
+                      }}>
+                        <span>{weather.icon}</span>
+                        <span>{weather.temp} {weather.condition}</span>
+                      </div>
+
+                      {/* Distance Pill */}
+                      <div style={{
+                        position: 'absolute',
+                        bottom: '12px',
+                        left: '12px',
+                        backgroundColor: 'rgba(15, 23, 42, 0.75)',
+                        backdropFilter: 'blur(4px)',
+                        color: '#FFFFFF',
+                        padding: '0.3rem 0.65rem',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: '0.78rem',
+                        fontWeight: 600,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.3rem'
+                      }}>
+                        <MapPin size={13} color="#BFDBFE" />
+                        {loc.distance}
                       </div>
                     </div>
 
-                    {/* Amenities tags */}
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-                      {loc.amenities.slice(0, 3).map((amenity, idx) => (
-                        <span key={idx} style={{
-                          fontSize: '0.72rem',
-                          fontWeight: 600,
-                          backgroundColor: '#F1F5F9',
-                          color: 'var(--text-secondary)',
-                          padding: '0.2rem 0.5rem',
-                          borderRadius: '4px'
-                        }}>
-                          {amenity}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Slots Info & Price Footer */}
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      paddingTop: '0.85rem',
-                      borderTop: '1px solid var(--border)',
-                      marginTop: '0.25rem'
-                    }}>
-                      <div>
-                        <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--primary)' }}>
-                          {formatCurrency(loc.pricePerHour)}
-                          <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-secondary)' }}>/hr</span>
+                    {/* Card Content */}
+                    <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text)' }}>{loc.name}</h3>
+                          <p style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', marginTop: '2px' }}>{loc.address}</p>
                         </div>
-                        <div style={{ fontSize: '0.78rem', color: loc.availableSlots > 0 ? 'var(--success)' : 'var(--danger)', fontWeight: 600 }}>
-                          {loc.availableSlots} / {loc.totalSlots} slots available
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', backgroundColor: '#FFFBEB', padding: '0.2rem 0.5rem', borderRadius: 'var(--radius-sm)', border: '1px solid #FDE68A' }}>
+                          <Star size={14} fill="#F59E0B" color="#F59E0B" />
+                          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#B45309' }}>{loc.rating}</span>
                         </div>
                       </div>
 
-                      <Link to={`/parking/${loc.id}`}>
-                        <Button variant="primary" size="md">
-                          Book Now
-                        </Button>
-                      </Link>
+                      {/* Live IoT Sensor indicator */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: '#059669', fontWeight: 600 }}>
+                        <Activity size={13} color="#10B981" />
+                        <span>IoT Gateways Active • Updated {loc.lastPing || 'Just now'}</span>
+                      </div>
+
+                      {/* Amenities tags */}
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                        {loc.amenities.slice(0, 3).map((amenity, idx) => (
+                          <span key={idx} style={{
+                            fontSize: '0.72rem',
+                            fontWeight: 600,
+                            backgroundColor: '#F1F5F9',
+                            color: 'var(--text-secondary)',
+                            padding: '0.2rem 0.5rem',
+                            borderRadius: '4px'
+                          }}>
+                            {amenity}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Slots Info & Price Footer */}
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        paddingTop: '0.85rem',
+                        borderTop: '1px solid var(--border)',
+                        marginTop: '0.25rem'
+                      }}>
+                        <div>
+                          <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--primary)' }}>
+                            {formatCurrency(loc.pricePerHour)}
+                            <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-secondary)' }}>/hr</span>
+                          </div>
+                          <div style={{ fontSize: '0.78rem', color: loc.availableSlots > 0 ? 'var(--success)' : 'var(--danger)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: loc.availableSlots > 0 ? '#10B981' : '#EF4444' }} />
+                            {loc.availableSlots} / {loc.totalSlots} slots free
+                          </div>
+                        </div>
+
+                        <Link to={`/parking/${loc.id}`}>
+                          <Button variant="primary" size="md">
+                            Book Now
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              ))}
+                  </Card>
+                );
+              })}
             </div>
           )}
 
