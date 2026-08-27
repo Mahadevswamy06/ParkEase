@@ -2,8 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Car, ShieldCheck, Zap, Headphones, Mail } from 'lucide-react';
 import Button from './Button';
+import { useAuth } from '../context/AuthContext';
 
 const Footer = () => {
+  const { isAuthenticated, role } = useAuth();
   return (
     <footer style={{
       backgroundColor: 'var(--card-bg)',
@@ -90,13 +92,26 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Quick Links */}
+        {/* Quick Links (Role Protected) */}
         <div>
           <h5 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--text)' }}>Platform</h5>
           <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
             <li><Link to="/parking">Find Indian Parking Lots</Link></li>
-            <li><Link to="/user/dashboard">User Dashboard</Link></li>
-            <li><Link to="/admin">Admin Portal</Link></li>
+            {isAuthenticated && role === 'driver' && (
+              <>
+                <li><Link to="/user/dashboard">User Dashboard</Link></li>
+                <li><Link to="/user/bookings">My Bookings</Link></li>
+              </>
+            )}
+            {isAuthenticated && role === 'admin' && (
+              <>
+                <li><Link to="/admin">Admin Portal</Link></li>
+                <li><Link to="/admin/locations">Manage Locations</Link></li>
+              </>
+            )}
+            {!isAuthenticated && (
+              <li><Link to="/login">Sign In / Register</Link></li>
+            )}
             <li><Link to="/about">System Architecture</Link></li>
           </ul>
         </div>

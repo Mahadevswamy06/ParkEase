@@ -197,36 +197,22 @@ const Navbar = () => {
             {theme === 'dark' ? <Sun size={18} color="#F59E0B" /> : <Moon size={18} color="#2563EB" />}
           </button>
 
-          {/* Role Switcher Pill */}
+          {/* Role Badge Indicator (Filtered strictly by authenticated role) */}
           {isAuthenticated && (
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '0.25rem',
-              padding: '0.25rem 0.65rem',
+              gap: '0.35rem',
+              padding: '0.3rem 0.75rem',
               borderRadius: '9999px',
               backgroundColor: 'var(--surface)',
               border: '1px solid var(--border)',
-              fontSize: '0.78rem'
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              color: role === 'admin' ? 'var(--primary)' : 'var(--success)'
             }}>
-              <Sparkles size={12} color="var(--primary)" />
-              <select
-                value={role}
-                onChange={handleRoleSwitch}
-                style={{
-                  border: 'none',
-                  background: 'transparent',
-                  color: 'var(--text)',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  outline: 'none',
-                  cursor: 'pointer',
-                  padding: 0
-                }}
-              >
-                <option value="driver" style={{ backgroundColor: 'var(--surface)', color: 'var(--text)' }}>Driver View</option>
-                <option value="admin" style={{ backgroundColor: 'var(--surface)', color: 'var(--text)' }}>Admin View</option>
-              </select>
+              <Sparkles size={13} color={role === 'admin' ? 'var(--primary)' : 'var(--success)'} />
+              <span>{role === 'admin' ? 'Admin Portal' : 'User Account'}</span>
             </div>
           )}
 
@@ -270,24 +256,65 @@ const Navbar = () => {
                 }}>
                   <div style={{ padding: '0.5rem', borderBottom: '1px solid var(--border)', marginBottom: '0.25rem' }}>
                     <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text)' }}>{currentUser?.name}</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{currentUser?.email}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      {currentUser?.email} ({role === 'admin' ? 'ADMIN' : 'USER'})
+                    </div>
                   </div>
-                  <Link
-                    to="/user/profile"
-                    onClick={() => setUserMenuOpen(false)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      padding: '0.5rem',
-                      borderRadius: 'var(--radius-sm)',
-                      color: 'var(--text)',
-                      fontSize: '0.85rem',
-                      textDecoration: 'none'
-                    }}
-                  >
-                    <User size={15} /> My Profile
-                  </Link>
+
+                  {role === 'admin' ? (
+                    <Link
+                      to="/admin"
+                      onClick={() => setUserMenuOpen(false)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        padding: '0.5rem',
+                        borderRadius: 'var(--radius-sm)',
+                        color: 'var(--text)',
+                        fontSize: '0.85rem',
+                        textDecoration: 'none'
+                      }}
+                    >
+                      <Shield size={15} color="var(--primary)" /> Admin Dashboard
+                    </Link>
+                  ) : (
+                    <>
+                      <Link
+                        to="/user/dashboard"
+                        onClick={() => setUserMenuOpen(false)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          padding: '0.5rem',
+                          borderRadius: 'var(--radius-sm)',
+                          color: 'var(--text)',
+                          fontSize: '0.85rem',
+                          textDecoration: 'none'
+                        }}
+                      >
+                        <User size={15} /> User Dashboard
+                      </Link>
+                      <Link
+                        to="/user/profile"
+                        onClick={() => setUserMenuOpen(false)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          padding: '0.5rem',
+                          borderRadius: 'var(--radius-sm)',
+                          color: 'var(--text)',
+                          fontSize: '0.85rem',
+                          textDecoration: 'none'
+                        }}
+                      >
+                        <User size={15} /> My Profile
+                      </Link>
+                    </>
+                  )}
+
                   <button
                     onClick={handleLogout}
                     style={{
@@ -302,7 +329,9 @@ const Navbar = () => {
                       fontSize: '0.85rem',
                       textAlign: 'left',
                       cursor: 'pointer',
-                      width: '100%'
+                      width: '100%',
+                      marginTop: '0.25rem',
+                      borderTop: '1px solid var(--border)'
                     }}
                   >
                     <LogOut size={15} /> Sign Out
