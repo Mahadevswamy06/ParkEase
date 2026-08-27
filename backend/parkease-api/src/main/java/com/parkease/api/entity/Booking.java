@@ -38,6 +38,7 @@ public class Booking {
     @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 
+    @Builder.Default
     @Column(length = 20)
     private String status = "CONFIRMED";
 

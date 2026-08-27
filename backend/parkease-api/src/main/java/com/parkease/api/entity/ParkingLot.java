@@ -46,6 +46,7 @@ public class ParkingLot {
     @Column(name = "price_per_hour", nullable = false, precision = 10, scale = 2)
     private BigDecimal pricePerHour;
 
+    @Builder.Default
     @Column(length = 20)
     private String status = "OPEN";
 

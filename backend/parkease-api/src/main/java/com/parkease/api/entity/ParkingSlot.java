@@ -24,9 +24,11 @@ public class ParkingSlot {
     @Column(name = "slot_number", nullable = false, length = 20)
     private String slotNumber;
 
+    @Builder.Default
     @Column(name = "slot_type", length = 30)
     private String slotType = "NORMAL";
 
+    @Builder.Default
     @Column(length = 20)
     private String status = "AVAILABLE";
 }

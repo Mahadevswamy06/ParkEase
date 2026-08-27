@@ -31,6 +31,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Builder.Default
     @Column(length = 20)
     private String role = "USER";
 
