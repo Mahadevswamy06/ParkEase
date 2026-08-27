@@ -79,31 +79,15 @@ export const ParkingProvider = ({ children }) => {
       setLastUpdatedTime(`Updated ${Math.floor(Math.random() * 8) + 1} seconds ago`);
     });
 
-    // Background interval to simulate live slot availability updates
+    // Background interval for 10-second live availability polling from backend/service
     const liveInterval = setInterval(() => {
-      setLocations(prev => {
-        if (!prev.length) return prev;
-        const randIdx = Math.floor(Math.random() * prev.length);
-        const target = prev[randIdx];
-        if (!target || !target.slots || !target.slots.length) return prev;
-
-        const randSlotIdx = Math.floor(Math.random() * target.slots.length);
-        const currentSlot = target.slots[randSlotIdx];
-        const newStatus = currentSlot.status === 'available' ? 'occupied' : 'available';
-
-        const updatedSlots = target.slots.map((s, idx) => idx === randSlotIdx ? { ...s, status: newStatus } : s);
-        const availCount = updatedSlots.filter(s => s.status === 'available').length;
-
-        const updatedList = prev.map((loc, idx) => idx === randIdx ? {
-          ...loc,
-          availableSlots: availCount,
-          slots: updatedSlots,
-          lastPing: 'Updated just now'
-        } : loc);
-
-        return updatedList;
-      });
-    }, 6000);
+      parkingService.getLocations().then(updated => {
+        if (updated && updated.length) {
+          setLocations(updated);
+          setLastUpdatedTime(`Live updated ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`);
+        }
+      }).catch(err => console.warn('Live polling ping:', err.message));
+    }, 10000);
 
     return () => {
       unsubscribe();

@@ -44,8 +44,11 @@ function App() {
                 {/* Public Routes */}
                 <Route element={<PublicLayout />}>
                   <Route path="/" element={<LandingPage />} />
+                  <Route path="/home" element={<LandingPage />} />
                   <Route path="/parking" element={<FindParking />} />
                   <Route path="/parking/:id" element={<ParkingDetails />} />
+                  <Route path="/booking" element={<FindParking />} />
+                  <Route path="/my-bookings" element={<BookingHistory />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<RegisterPage />} />
                 </Route>

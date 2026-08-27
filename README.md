@@ -1,10 +1,10 @@
-# 🅿️ ParkEase — Smart Parking SaaS Platform
+# 🅿️ ParkEase — Full-Stack Smart Parking System
 
 [![Live Production Demo](https://img.shields.io/badge/Live%20Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://park-ease-mahadevswamy082-2176s-projects.vercel.app)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.2-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![React 19](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.0-0055FF?style=for-the-badge&logo=framer&logoColor=white)](https://www.framer.com/motion/)
-[![Default Theme](https://img.shields.io/badge/Default%20Theme-White%2FLight%20Mode-2563EB?style=for-the-badge)](https://github.com/Mahadevswamy06/ParkEase)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge)](LICENSE)
 
 > **🌐 Live Website**: [https://park-ease-mahadevswamy082-2176s-projects.vercel.app](https://park-ease-mahadevswamy082-2176s-projects.vercel.app)  
@@ -14,127 +14,163 @@
 
 ## 🚀 Overview
 
-**ParkEase** is an enterprise-grade Smart Parking SaaS platform built for modern urban spaces across major Indian metros (New Delhi, Mumbai, Bengaluru, Hyderabad, Kolkata, Chennai). 
+**ParkEase** is a full-stack Smart Parking Management System designed for modern urban centers (Pune, Mumbai, Bengaluru, Delhi, Hyderabad, Chennai).
 
-It bridges IoT hardware telemetry simulation (ANPR optical license plate scanning, barrier gate controls) with a sleek, user-centric SaaS web experience. Designed with a **Clean White/Light Mode Default Aesthetic** (Stripe & Uber inspired) and instant high-contrast Dark Mode switching, ParkEase delivers effortless spot reservation, digital QR passes, live slot telemetry, and administrative control.
-
----
-
-## ✨ Key Features & UX Enhancements
-
-- ☀️ **Default White / Light SaaS Theme**: Clean, modern high-contrast design system tailored for crisp daylight readability, with seamless one-click toggle to Dark Mode.
-- ⚡ **ANPR Optical Barrier Integration**: Real-time license plate detection simulation (`DL-01-AB-1234`) for automated barrier gate entry and touchless check-in/check-out.
-- 🗺️ **Interactive Visual Slot Selection**: Real-time 2D grid spot map showing Available, Occupied, EV Charging, and Reserved slots.
-- 💳 **Dynamic INR (₹) Pricing Engine**: Instant transparent rate calculation customized by vehicle type (Two-Wheeler, Sedan, SUV, EV) and parking duration.
-- 🎫 **Digital Pass & QR Kiosk**: Pass generation with downloadable PDF preview, one-tap Google Maps navigation, and native sharing.
-- 🔑 **Dual Role-Based Workflows**: 
-  - **Driver Portal**: Find parking, filter by EV/Covered, reserve slots, track active bookings, manage vehicle profiles.
-  - **Admin Control Center**: Monitor revenue metrics, manage locations, override slot availability, inspect ANPR logs, generate occupancy reports.
-- 🔔 **Instant Telemetry & Notifications**: Live telemetry status banner, real-time alert badges, toast notifications, and responsive mobile nav.
+It combines a **Java + Spring Boot REST API backend**, **MySQL database persistence**, and a **React + Vite frontend** with Google Maps API telemetry, Haversine nearby location search, slot reservation locking, and admin controls.
 
 ---
 
-## 📁 Updated Directory Architecture
+## 📁 Full-Stack Architecture Structure
 
-```
+```text
 ParkEase/
-├── public/                     # Static icons & branding assets
-│   ├── favicon.svg
-│   └── icons.svg
-├── src/
-│   ├── assets/                 # SVGs and static visual assets
-│   ├── components/             # Reusable UI component library
-│   │   ├── booking/            # BookingModal.jsx, DigitalPass.jsx
-│   │   ├── common/             # InteractiveMap.jsx, Skeleton.jsx
-│   │   ├── layout/             # MobileNav.jsx
-│   │   ├── Button.jsx          # Styled primary/secondary buttons
-│   │   ├── Card.jsx            # Universal card container with light/dark tokens
-│   │   ├── EmptyState.jsx      # Friendly empty state fallback UI
-│   │   ├── ErrorState.jsx      # Fallback error container
-│   │   ├── FilterPanel.jsx     # Search & filter multi-select bar
-│   │   ├── Footer.jsx          # Modern footer component
-│   │   ├── Input.jsx           # High-contrast text & select inputs
-│   │   ├── LiveTelemetryBanner.jsx # Real-time hardware status ticker
-│   │   ├── LoadingSkeleton.jsx # Pulse skeleton loading states
-│   │   ├── Modal.jsx           # Animated modal overlay wrapper
-│   │   ├── Navbar.jsx          # Top bar navigation with theme toggle & role switcher
-│   │   ├── SearchBar.jsx       # Location & venue quick search
-│   │   ├── Sidebar.jsx         # Admin & User sidebar layout navigation
-│   │   ├── StatisticsCard.jsx  # KPI metrics & analytics card
-│   │   ├── StatusBadge.jsx     # Color-coded pill badges
-│   │   └── Toast.jsx           # Floating toast notification stack
-│   ├── context/                # Global React context state providers
-│   │   ├── AuthContext.jsx     # Role-based auth (Driver & Admin)
-│   │   ├── ParkingContext.jsx  # Slot reservations & location state
-│   │   ├── ThemeContext.jsx    # Light/Dark mode state (Default: Light Mode)
-│   │   └── ToastContext.jsx    # Toast notification manager
-│   ├── layouts/                # Wrapper layouts (Admin, Public, User)
-│   ├── pages/                  # Page routes
-│   │   ├── admin/              # Admin Dashboard, ManageLocations, ManageBookings, ManageSlots, ManageUsers, ReportsPage
-│   │   ├── public/             # LandingPage, FindParking, LoginPage, RegisterPage, AboutPage, ContactPage, NotFoundPage
-│   │   └── user/               # UserDashboard, BookingHistory, CheckInCheckout, ProfilePage, Notifications, ParkingDetails
-│   ├── services/               # Service-oriented API modules
-│   │   ├── anprService.js      # License plate scanning telemetry
-│   │   ├── bookingService.js   # Reservation workflows
-│   │   ├── parkingService.js   # Parking location data provider
-│   │   ├── pricingService.js   # Dynamic rate calculation engine
-│   │   └── telemetryService.js # Live IoT sensor telemetry feed
-│   ├── utils/                  # Utility helpers & mock dataset
-│   │   ├── dummyData.js        # Seed locations & bookings dataset
-│   │   └── formatters.js       # Currency (₹), date & plate formatters
-│   ├── App.jsx                 # React Router v7 routes & layout setup
-│   ├── index.css               # Global Design System tokens & CSS Custom Properties
-│   └── main.jsx                # Application root entry point
-├── vercel.json                 # Vercel SPA deployment configuration
-├── vite.config.js              # Vite build configuration
-└── package.json                # Project manifest & dependencies
+│
+├── frontend/
+│   └── parkease-react/
+│       ├── public/
+│       └── src/
+│           ├── assets/
+│           ├── components/
+│           │   ├── Navbar.jsx
+│           │   ├── ParkingMap.jsx
+│           │   ├── SlotGrid.jsx
+│           │   ├── SearchBar.jsx
+│           │   ├── LoadingSkeleton.jsx
+│           │   └── booking/
+│           ├── pages/
+│           │   ├── public/ (LandingPage, FindParking, LoginPage)
+│           │   ├── user/ (UserDashboard, ParkingDetails, BookingHistory, CheckInCheckout)
+│           │   └── admin/ (AdminDashboard, ManageLocations, ManageSlots)
+│           ├── services/
+│           │   ├── parkingService.js
+│           │   ├── bookingService.js
+│           │   └── userService.js
+│           ├── hooks/
+│           │   └── useLocation.js
+│           ├── utils/
+│           │   └── distance.js
+│           ├── App.jsx
+│           ├── main.jsx
+│           └── index.css
+│
+└── backend/
+    └── parkease-api/
+        ├── src/
+        │   ├── main/
+        │   │   ├── java/com/parkease/api/
+        │   │   │   ├── ParkEaseApplication.java
+        │   │   │   ├── controller/ (ParkingController, SlotController, BookingController, UserController)
+        │   │   │   ├── service/ (ParkingService, SlotService, BookingService, UserService)
+        │   │   │   ├── repository/ (ParkingRepository, SlotRepository, BookingRepository, UserRepository)
+        │   │   │   ├── entity/ (ParkingLot, ParkingSlot, Booking, User)
+        │   │   │   ├── dto/ (ParkingResponse, BookingRequest, BookingResponse)
+        │   │   │   └── config/ (CorsConfig)
+        │   │   └── resources/
+        │   │       ├── application.properties
+        │   │       └── data.sql
+        └── pom.xml
 ```
 
 ---
 
-## 🛠️ Technology Stack
+## 🗄️ Database Schema (MySQL)
 
-- **Framework**: [React 19](https://react.dev/)
-- **Build Engine**: [Vite 6.0](https://vitejs.dev/)
-- **Routing**: [React Router v7](https://reactrouter.com/)
-- **Styling**: Vanilla CSS3 with Global Tokens & Design Variables
-- **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Charts & Data**: [Recharts](https://recharts.org/)
-- **Hosting & CI/CD**: [Vercel](https://vercel.app)
+```sql
+CREATE DATABASE parkease;
+USE parkease;
+
+-- Users Table
+CREATE TABLE users (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(20) DEFAULT 'USER',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Parking Lots Table
+CREATE TABLE parking_lots (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(150) NOT NULL,
+    address VARCHAR(255),
+    latitude DECIMAL(10,7) NOT NULL,
+    longitude DECIMAL(10,7) NOT NULL,
+    total_slots INT NOT NULL,
+    available_slots INT NOT NULL,
+    price_per_hour DECIMAL(10,2) NOT NULL,
+    status VARCHAR(20) DEFAULT 'OPEN',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Parking Slots Table
+CREATE TABLE parking_slots (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    parking_lot_id BIGINT NOT NULL,
+    slot_number VARCHAR(20) NOT NULL,
+    slot_type VARCHAR(30) DEFAULT 'NORMAL',
+    status VARCHAR(20) DEFAULT 'AVAILABLE',
+    FOREIGN KEY (parking_lot_id) REFERENCES parking_lots(id)
+);
+
+-- Bookings Table
+CREATE TABLE bookings (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    parking_lot_id BIGINT NOT NULL,
+    slot_id BIGINT NOT NULL,
+    start_time DATETIME NOT NULL,
+    end_time DATETIME NOT NULL,
+    status VARCHAR(20) DEFAULT 'CONFIRMED',
+    amount DECIMAL(10,2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (parking_lot_id) REFERENCES parking_lots(id),
+    FOREIGN KEY (slot_id) REFERENCES parking_slots(id)
+);
+```
 
 ---
 
-## 💻 Local Setup & Installation
+## 🔌 REST API Endpoints
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/Mahadevswamy06/ParkEase.git
-   cd ParkEase
-   ```
+### Parking APIs
+- `GET /api/parking` — List all parking lots
+- `GET /api/parking/{id}` — Get parking lot details
+- `GET /api/parking/nearby?lat={lat}&lng={lng}` — Find nearby parking within distance using Haversine calculation
+- `POST /api/parking` — Add new parking lot (Admin)
+- `PUT /api/parking/{id}` — Update parking lot details
+- `DELETE /api/parking/{id}` — Remove parking lot
 
-2. **Install project dependencies**:
-   ```bash
-   npm install
-   ```
+### Slot APIs
+- `GET /api/parking/{parkingId}/slots` — Get slots for location
+- `GET /api/slots/{id}` — Get single slot details
+- `PUT /api/slots/{id}/status` — Change slot status (`AVAILABLE`, `OCCUPIED`, `RESERVED`, `MAINTENANCE`)
 
-3. **Launch the development server**:
-   ```bash
-   npm run dev
-   ```
-   Open `http://localhost:5173` in your browser.
-
-4. **Build production bundle**:
-   ```bash
-   npm run build
-   ```
+### Booking APIs
+- `POST /api/bookings` — Create slot reservation (atomic status change to `RESERVED`)
+- `GET /api/bookings/user/{userId}` — Get user bookings
+- `GET /api/bookings/{id}` — Get single booking details
+- `PUT /api/bookings/{id}/cancel` — Cancel booking and restore slot availability
 
 ---
 
-## 🔗 Updated Repository Links
+## 💻 Local Setup & Development
 
-- 🐙 **GitHub Repository**: [https://github.com/Mahadevswamy06/ParkEase](https://github.com/Mahadevswamy06/ParkEase)
-- ⚡ **Live Vercel Application**: [https://park-ease-mahadevswamy082-2176s-projects.vercel.app](https://park-ease-mahadevswamy082-2176s-projects.vercel.app)
+### 1. Launch Spring Boot Backend (`backend/parkease-api`)
+```bash
+cd backend/parkease-api
+./mvnw spring-boot:run
+```
+Backend runs at `http://localhost:8080`.
+
+### 2. Launch React Frontend (`frontend/parkease-react`)
+```bash
+cd frontend/parkease-react
+npm install
+npm run dev
+```
+Frontend runs at `http://localhost:5173`.
 
 ---
 
