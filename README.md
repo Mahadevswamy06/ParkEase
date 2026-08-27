@@ -1,13 +1,13 @@
 # 🅿️ ParkEase — Smart Parking SaaS Platform
 
-[![Live Production Demo](https://img.shields.io/badge/Live%20Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://park-ease-nhxaegpd5-mahadevswamy082-2176s-projects.vercel.app)
+[![Live Production Demo](https://img.shields.io/badge/Live%20Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://park-ease-mahadevswamy082-2176s-projects.vercel.app)
 [![React 19](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.0-0055FF?style=for-the-badge&logo=framer&logoColor=white)](https://www.framer.com/motion/)
 [![Default Theme](https://img.shields.io/badge/Default%20Theme-White%2FLight%20Mode-2563EB?style=for-the-badge)](https://github.com/Mahadevswamy06/ParkEase)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge)](LICENSE)
 
-> **🌐 Live Website**: [https://park-ease-nhxaegpd5-mahadevswamy082-2176s-projects.vercel.app](https://park-ease-nhxaegpd5-mahadevswamy082-2176s-projects.vercel.app)  
+> **🌐 Live Website**: [https://park-ease-mahadevswamy082-2176s-projects.vercel.app](https://park-ease-mahadevswamy082-2176s-projects.vercel.app)  
 > **📦 Repository**: [https://github.com/Mahadevswamy06/ParkEase](https://github.com/Mahadevswamy06/ParkEase)
 
 ---
@@ -134,7 +134,7 @@ ParkEase/
 ## 🔗 Updated Repository Links
 
 - 🐙 **GitHub Repository**: [https://github.com/Mahadevswamy06/ParkEase](https://github.com/Mahadevswamy06/ParkEase)
-- ⚡ **Live Vercel Application**: [https://park-ease-nhxaegpd5-mahadevswamy082-2176s-projects.vercel.app](https://park-ease-nhxaegpd5-mahadevswamy082-2176s-projects.vercel.app)
+- ⚡ **Live Vercel Application**: [https://park-ease-mahadevswamy082-2176s-projects.vercel.app](https://park-ease-mahadevswamy082-2176s-projects.vercel.app)
 
 ---
 
