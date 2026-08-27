@@ -1,22 +1,28 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-const ThemeContext = createContext({ theme: 'dark', toggleTheme: () => {} });
+const ThemeContext = createContext({ theme: 'light', toggleTheme: () => {} });
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState(() => {
+    try {
+      const saved = localStorage.getItem('parkease_theme');
+      return saved ? saved : 'light';
+    } catch {
+      return 'light';
+    }
+  });
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    localStorage.setItem('parkease_theme', 'dark');
-  }, []);
+    document.documentElement.setAttribute('data-theme', theme);
+    try {
+      localStorage.setItem('parkease_theme', theme);
+    } catch (e) {
+      // Ignore storage errors in restricted iframe environments
+    }
+  }, [theme]);
 
   const toggleTheme = () => {
-    setTheme(prev => {
-      const nextTheme = prev === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', nextTheme);
-      localStorage.setItem('parkease_theme', nextTheme);
-      return nextTheme;
-    });
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
 
   return (

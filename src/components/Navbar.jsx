@@ -179,6 +179,7 @@ const Navbar = () => {
           <button
             onClick={toggleTheme}
             aria-label="Toggle Theme"
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             style={{
               width: '36px',
               height: '36px',
@@ -189,10 +190,11 @@ const Navbar = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              transition: 'var(--transition)'
             }}
           >
-            {theme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
+            {theme === 'dark' ? <Sun size={18} color="#F59E0B" /> : <Moon size={18} color="#2563EB" />}
           </button>
 
           {/* Role Switcher Pill */}
@@ -222,8 +224,8 @@ const Navbar = () => {
                   padding: 0
                 }}
               >
-                <option value="driver">Driver View</option>
-                <option value="admin">Admin View</option>
+                <option value="driver" style={{ backgroundColor: 'var(--surface)', color: 'var(--text)' }}>Driver View</option>
+                <option value="admin" style={{ backgroundColor: 'var(--surface)', color: 'var(--text)' }}>Admin View</option>
               </select>
             </div>
           )}

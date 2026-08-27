@@ -135,6 +135,11 @@ input::placeholder, textarea::placeholder {
   color: var(--text-muted);
 }
 
+option {
+  background-color: var(--surface);
+  color: var(--text);
+}
+
 /* Card Utility */
 .clean-card {
   background-color: var(--card-bg);
