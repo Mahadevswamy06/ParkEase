@@ -58,7 +58,7 @@ const LoginPage = () => {
       alignItems: 'center',
       gap: '3rem'
     }}>
-      
+
       {/* Left Side: Luxury Parking Showcase Illustration */}
       <motion.div
         initial={{ opacity: 0, x: -40 }}
@@ -93,7 +93,7 @@ const LoginPage = () => {
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(180deg, rgba(5, 8, 22, 0.2) 0%, rgba(5, 8, 22, 0.92) 100%)'
+          background: 'linear-gradient(180deg, rgba(230, 231, 238, 0.83) 0%, rgba(219, 221, 230, 0.92) 100%)'
         }} />
 
         {/* Left Content overlay text */}

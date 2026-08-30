@@ -1,6 +1,7 @@
 # 🅿️ ParkEase — Full-Stack Smart Parking System
 
 [![Live Production Demo](https://img.shields.io/badge/Live%20Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://park-ease-mahadevswamy082-2176s-projects.vercel.app)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Mahadevswamy06/ParkEase)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.2-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![React 19](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
@@ -8,7 +9,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge)](LICENSE)
 
 > **🌐 Live Website**: [https://park-ease-mahadevswamy082-2176s-projects.vercel.app](https://park-ease-mahadevswamy082-2176s-projects.vercel.app)  
-> **📦 Repository**: [https://github.com/Mahadevswamy06/ParkEase](https://github.com/Mahadevswamy06/ParkEase)
+> **📦 GitHub Repository**: [https://github.com/Mahadevswamy06/ParkEase](https://github.com/Mahadevswamy06/ParkEase)
 
 ---
 
