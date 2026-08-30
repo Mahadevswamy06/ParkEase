@@ -93,7 +93,7 @@ const LoginPage = () => {
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(180deg, rgba(230, 231, 238, 0.83) 0%, rgba(219, 221, 230, 0.92) 100%)'
+          background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.25) 0%, rgba(15, 23, 42, 0.88) 100%)'
         }} />
 
         {/* Left Content overlay text */}
@@ -104,7 +104,7 @@ const LoginPage = () => {
             gap: '0.4rem',
             padding: '0.35rem 0.85rem',
             borderRadius: '9999px',
-            backgroundColor: 'rgba(124, 58, 237, 0.3)',
+            backgroundColor: 'rgba(37, 99, 235, 0.4)',
             backdropFilter: 'blur(12px)',
             color: '#FFFFFF',
             fontSize: '0.8rem',
@@ -118,7 +118,7 @@ const LoginPage = () => {
             FastPass ANPR Barrier Gate Access
           </h2>
 
-          <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', maxWidth: '420px' }}>
+          <p style={{ fontSize: '0.95rem', color: 'rgba(255, 255, 255, 0.9)', maxWidth: '420px' }}>
             Seamless automated entry across 500+ premium Indian parking garages.
           </p>
         </div>

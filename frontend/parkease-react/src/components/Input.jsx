@@ -55,7 +55,7 @@ const Input = ({
           <div style={{
             position: 'absolute',
             left: '14px',
-            color: isFocused ? '#7C3AED' : '#94A3B8',
+            color: isFocused ? 'var(--primary)' : 'var(--text-muted)',
             display: 'flex',
             alignItems: 'center',
             pointerEvents: 'none',
@@ -81,22 +81,22 @@ const Input = ({
             paddingLeft: Icon ? '42px' : '14px',
             paddingRight: (isPassword || success || error) ? '42px' : '14px',
             fontSize: '0.95rem',
-            color: '#FFFFFF',
-            backgroundColor: disabled ? '#374151' : '#111827',
+            color: 'var(--text)',
+            backgroundColor: disabled ? 'var(--bg-subtle)' : 'var(--surface)',
             border: error
-              ? '1px solid #EF4444'
+              ? '1px solid var(--danger)'
               : success
-                ? '1px solid #22C55E'
+                ? '1px solid var(--success)'
                 : isFocused
-                  ? '1px solid #7C3AED'
-                  : '1px solid rgba(255, 255, 255, 0.12)',
+                  ? '1px solid var(--primary)'
+                  : '1px solid var(--border)',
             borderRadius: '12px',
             outline: 'none',
             transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
             boxShadow: isFocused
               ? (error
-                  ? '0 0 0 3px rgba(239, 68, 68, 0.25)'
-                  : '0 0 0 3px rgba(124, 58, 237, 0.25)')
+                  ? '0 0 0 3px var(--danger-light)'
+                  : '0 0 0 3px var(--primary-light)')
               : 'none',
             transform: isFocused ? 'translateY(-1px)' : 'none',
             cursor: disabled ? 'not-allowed' : 'text',
@@ -124,7 +124,7 @@ const Input = ({
               right: '12px',
               background: 'none',
               border: 'none',
-              color: '#94A3B8',
+              color: 'var(--text-muted)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -134,8 +134,8 @@ const Input = ({
               transform: iconRotated ? 'rotate(15deg) scale(1.1)' : 'scale(1)',
               zIndex: 3
             }}
-            onMouseEnter={(e) => e.currentTarget.style.color = '#FFFFFF'}
-            onMouseLeave={(e) => e.currentTarget.style.color = '#94A3B8'}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
