@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Car, Search, User, LogOut, Shield, Sun, Moon, Bell, Sparkles, Menu, X } from 'lucide-react';
+import { Car, Search, User, LogOut, Shield, Sun, Moon, Bell, Sparkles, Navigation, History, Layers } from 'lucide-react';
 import Button from './Button';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useParking } from '../context/ParkingContext';
 
 const Navbar = () => {
-  const { isAuthenticated, currentUser, role, logout, setRole } = useAuth();
+  const { isAuthenticated, currentUser, role, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { unreadNotifCount } = useParking();
   const location = useLocation();
@@ -18,16 +18,6 @@ const Navbar = () => {
   const handleLogout = () => {
     logout();
     navigate('/login');
-  };
-
-  const handleRoleSwitch = (e) => {
-    const selected = e.target.value;
-    setRole(selected);
-    if (selected === 'admin') {
-      navigate('/admin');
-    } else {
-      navigate('/user/dashboard');
-    }
   };
 
   return (
@@ -62,72 +52,134 @@ const Navbar = () => {
           </span>
         </Link>
 
-        {/* Navigation Links */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '1.75rem' }} className="desktop-nav">
-          <Link
-            to="/"
-            style={{
-              fontSize: '0.9rem',
-              fontWeight: location.pathname === '/' ? 700 : 500,
-              color: location.pathname === '/' ? 'var(--primary)' : 'var(--text-secondary)',
-              textDecoration: 'none'
-            }}
-          >
-            Home
-          </Link>
-
+        {/* Navigation Links based on User Flow */}
+        <nav style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }} className="desktop-nav">
           <Link
             to="/parking"
             style={{
               fontSize: '0.9rem',
               fontWeight: location.pathname === '/parking' ? 700 : 500,
               color: location.pathname === '/parking' ? 'var(--primary)' : 'var(--text-secondary)',
-              textDecoration: 'none'
+              textDecoration: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem'
             }}
           >
-            Find Parking
+            <Search size={16} /> Find Parking
           </Link>
 
           {isAuthenticated && role === 'driver' && (
             <>
-              <Link
-                to="/user/dashboard"
-                style={{
-                  fontSize: '0.9rem',
-                  fontWeight: location.pathname === '/user/dashboard' ? 700 : 500,
-                  color: location.pathname === '/user/dashboard' ? 'var(--primary)' : 'var(--text-secondary)',
-                  textDecoration: 'none'
-                }}
-              >
-                Dashboard
-              </Link>
-
               <Link
                 to="/user/bookings"
                 style={{
                   fontSize: '0.9rem',
                   fontWeight: location.pathname === '/user/bookings' ? 700 : 500,
                   color: location.pathname === '/user/bookings' ? 'var(--primary)' : 'var(--text-secondary)',
-                  textDecoration: 'none'
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem'
                 }}
               >
-                My Bookings
+                <Car size={16} /> My Bookings
+              </Link>
+
+              <Link
+                to="/user/history"
+                style={{
+                  fontSize: '0.9rem',
+                  fontWeight: location.pathname === '/user/history' ? 700 : 500,
+                  color: location.pathname === '/user/history' ? 'var(--primary)' : 'var(--text-secondary)',
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem'
+                }}
+              >
+                <History size={16} /> Parking History
+              </Link>
+
+              <Link
+                to="/user/profile"
+                style={{
+                  fontSize: '0.9rem',
+                  fontWeight: location.pathname === '/user/profile' ? 700 : 500,
+                  color: location.pathname === '/user/profile' ? 'var(--primary)' : 'var(--text-secondary)',
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem'
+                }}
+              >
+                <User size={16} /> Profile
               </Link>
             </>
           )}
 
           {isAuthenticated && role === 'admin' && (
-            <Link
-              to="/admin"
-              style={{
-                fontSize: '0.9rem',
-                fontWeight: location.pathname.startsWith('/admin') ? 700 : 500,
-                color: location.pathname.startsWith('/admin') ? 'var(--primary)' : 'var(--text-secondary)',
-                textDecoration: 'none'
-              }}
-            >
-              Admin Portal
-            </Link>
+            <>
+              <Link
+                to="/admin"
+                style={{
+                  fontSize: '0.9rem',
+                  fontWeight: location.pathname === '/admin' ? 700 : 500,
+                  color: location.pathname === '/admin' ? 'var(--primary)' : 'var(--text-secondary)',
+                  textDecoration: 'none'
+                }}
+              >
+                Overview
+              </Link>
+
+              <Link
+                to="/admin/locations"
+                style={{
+                  fontSize: '0.9rem',
+                  fontWeight: location.pathname === '/admin/locations' ? 700 : 500,
+                  color: location.pathname === '/admin/locations' ? 'var(--primary)' : 'var(--text-secondary)',
+                  textDecoration: 'none'
+                }}
+              >
+                Parking Locations
+              </Link>
+
+              <Link
+                to="/admin/slots"
+                style={{
+                  fontSize: '0.9rem',
+                  fontWeight: location.pathname === '/admin/slots' ? 700 : 500,
+                  color: location.pathname === '/admin/slots' ? 'var(--primary)' : 'var(--text-secondary)',
+                  textDecoration: 'none'
+                }}
+              >
+                Live Slots
+              </Link>
+
+              <Link
+                to="/admin/bookings"
+                style={{
+                  fontSize: '0.9rem',
+                  fontWeight: location.pathname === '/admin/bookings' ? 700 : 500,
+                  color: location.pathname === '/admin/bookings' ? 'var(--primary)' : 'var(--text-secondary)',
+                  textDecoration: 'none'
+                }}
+              >
+                Bookings
+              </Link>
+
+              <Link
+                to="/admin/users"
+                style={{
+                  fontSize: '0.9rem',
+                  fontWeight: location.pathname === '/admin/users' ? 700 : 500,
+                  color: location.pathname === '/admin/users' ? 'var(--primary)' : 'var(--text-secondary)',
+                  textDecoration: 'none'
+                }}
+              >
+                Users
+              </Link>
+            </>
           )}
         </nav>
 
@@ -197,7 +249,7 @@ const Navbar = () => {
             {theme === 'dark' ? <Sun size={18} color="#F59E0B" /> : <Moon size={18} color="#2563EB" />}
           </button>
 
-          {/* Role Badge Indicator (Filtered strictly by authenticated role) */}
+          {/* Role Indicator Badge */}
           {isAuthenticated && (
             <div style={{
               display: 'inline-flex',
@@ -212,7 +264,7 @@ const Navbar = () => {
               color: role === 'admin' ? 'var(--primary)' : 'var(--success)'
             }}>
               <Sparkles size={13} color={role === 'admin' ? 'var(--primary)' : 'var(--success)'} />
-              <span>{role === 'admin' ? 'Admin Portal' : 'User Account'}</span>
+              <span>{role === 'admin' ? 'Admin Portal' : 'Driver Account'}</span>
             </div>
           )}
 
@@ -257,7 +309,7 @@ const Navbar = () => {
                   <div style={{ padding: '0.5rem', borderBottom: '1px solid var(--border)', marginBottom: '0.25rem' }}>
                     <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text)' }}>{currentUser?.name}</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                      {currentUser?.email} ({role === 'admin' ? 'ADMIN' : 'USER'})
+                      {currentUser?.email} ({role === 'admin' ? 'ADMIN' : 'DRIVER'})
                     </div>
                   </div>
 
@@ -276,12 +328,12 @@ const Navbar = () => {
                         textDecoration: 'none'
                       }}
                     >
-                      <Shield size={15} color="var(--primary)" /> Admin Dashboard
+                      <Shield size={15} color="var(--primary)" /> Admin Overview
                     </Link>
                   ) : (
                     <>
                       <Link
-                        to="/user/dashboard"
+                        to="/user/bookings"
                         onClick={() => setUserMenuOpen(false)}
                         style={{
                           display: 'flex',
@@ -294,7 +346,7 @@ const Navbar = () => {
                           textDecoration: 'none'
                         }}
                       >
-                        <User size={15} /> User Dashboard
+                        <Car size={15} /> My Bookings
                       </Link>
                       <Link
                         to="/user/profile"
@@ -310,7 +362,7 @@ const Navbar = () => {
                           textDecoration: 'none'
                         }}
                       >
-                        <User size={15} /> My Profile
+                        <User size={15} /> Profile
                       </Link>
                     </>
                   )}

@@ -32,6 +32,8 @@ import CheckInCheckout from './pages/user/CheckInCheckout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ManageLocations from './pages/admin/ManageLocations';
 import ManageSlots from './pages/admin/ManageSlots';
+import ManageBookings from './pages/admin/ManageBookings';
+import ManageUsers from './pages/admin/ManageUsers';
 
 function App() {
   return (
@@ -43,20 +45,19 @@ function App() {
               <Routes>
                 {/* Public Routes */}
                 <Route element={<PublicLayout />}>
-                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/" element={<FindParking />} />
                   <Route path="/home" element={<LandingPage />} />
                   <Route path="/parking" element={<FindParking />} />
                   <Route path="/parking/:id" element={<ParkingDetails />} />
-                  <Route path="/booking" element={<FindParking />} />
-                  <Route path="/my-bookings" element={<BookingHistory />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<RegisterPage />} />
                 </Route>
 
-                {/* User Dashboard & Reservation Routes */}
+                {/* User Flow Routes */}
                 <Route element={<UserLayout />}>
-                  <Route path="/user/dashboard" element={<UserDashboard />} />
+                  <Route path="/user/dashboard" element={<FindParking />} />
                   <Route path="/user/bookings" element={<BookingHistory />} />
+                  <Route path="/user/history" element={<BookingHistory />} />
                   <Route path="/user/vehicles" element={<Vehicles />} />
                   <Route path="/user/notifications" element={<Notifications />} />
                   <Route path="/user/profile" element={<UserProfile />} />
@@ -68,6 +69,8 @@ function App() {
                   <Route path="/admin" element={<AdminDashboard />} />
                   <Route path="/admin/locations" element={<ManageLocations />} />
                   <Route path="/admin/slots" element={<ManageSlots />} />
+                  <Route path="/admin/bookings" element={<ManageBookings />} />
+                  <Route path="/admin/users" element={<ManageUsers />} />
                 </Route>
 
                 {/* Catch-all 404 Route */}

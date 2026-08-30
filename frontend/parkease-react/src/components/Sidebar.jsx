@@ -5,7 +5,6 @@ import {
   MapPin,
   History,
   Car,
-  CreditCard,
   Bell,
   User,
   Settings,
@@ -14,7 +13,7 @@ import {
   FileText,
   BarChart3,
   LogOut,
-  Sliders
+  Search
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useParking } from '../context/ParkingContext';
@@ -25,22 +24,20 @@ const Sidebar = ({ isAdminMode = false }) => {
   const navigate = useNavigate();
 
   const driverLinks = [
-    { label: 'Dashboard', path: '/user/dashboard', icon: LayoutDashboard },
-    { label: 'Find Parking', path: '/parking', icon: MapPin },
-    { label: 'My Bookings', path: '/user/bookings', icon: History },
-    { label: 'Vehicles', path: '/user/vehicles', icon: Car },
-    { label: 'Notifications', path: '/user/notifications', icon: Bell, badge: unreadNotifCount },
+    { label: 'Find Parking', path: '/parking', icon: Search },
+    { label: 'My Bookings', path: '/user/bookings', icon: Car },
+    { label: 'Parking History', path: '/user/history', icon: History },
     { label: 'Profile', path: '/user/profile', icon: User },
-    { label: 'Settings', path: '/user/settings', icon: Settings },
+    { label: 'My Vehicles', path: '/user/vehicles', icon: Car },
+    { label: 'Notifications', path: '/user/notifications', icon: Bell, badge: unreadNotifCount }
   ];
 
   const adminLinks = [
     { label: 'Overview', path: '/admin', icon: LayoutDashboard },
     { label: 'Parking Locations', path: '/admin/locations', icon: MapPin },
-    { label: 'Parking Slots', path: '/admin/slots', icon: Layers },
+    { label: 'Live Slots', path: '/admin/slots', icon: Layers },
     { label: 'Bookings', path: '/admin/bookings', icon: FileText },
-    { label: 'Users', path: '/admin/users', icon: Users },
-    { label: 'Analytics & Reports', path: '/admin/reports', icon: BarChart3 },
+    { label: 'Users', path: '/admin/users', icon: Users }
   ];
 
   const navItems = isAdminMode ? adminLinks : driverLinks;
@@ -52,7 +49,7 @@ const Sidebar = ({ isAdminMode = false }) => {
 
   return (
     <aside style={{
-      width: '240px',
+      width: '230px',
       backgroundColor: 'var(--sidebar-bg)',
       borderRight: '1px solid var(--border)',
       display: 'flex',
@@ -69,7 +66,7 @@ const Sidebar = ({ isAdminMode = false }) => {
         letterSpacing: '0.06em',
         textTransform: 'uppercase'
       }}>
-        {isAdminMode ? 'Parking Operator' : 'Driver Portal'}
+        {isAdminMode ? 'Admin Portal' : 'Driver Portal'}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', flex: 1 }}>
@@ -79,7 +76,7 @@ const Sidebar = ({ isAdminMode = false }) => {
             <NavLink
               key={item.path}
               to={item.path}
-              end={item.path === '/admin' || item.path === '/user/dashboard'}
+              end={item.path === '/admin' || item.path === '/parking'}
               style={({ isActive }) => ({
                 display: 'flex',
                 alignItems: 'center',

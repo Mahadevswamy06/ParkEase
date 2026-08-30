@@ -63,6 +63,11 @@ public class BookingService {
         slot.setStatus("RESERVED");
         slotRepository.save(slot);
 
+        com.parkease.api.websocket.SlotStatusWebSocketHandler.broadcast(String.format(
+            "{\"type\":\"SLOT_UPDATE\",\"slotId\":%d,\"parkingLotId\":%d,\"slotNumber\":\"%s\",\"newStatus\":\"RESERVED\"}",
+            slot.getId(), parkingLot.getId(), slot.getSlotNumber()
+        ));
+
         if (parkingLot.getAvailableSlots() > 0) {
             parkingLot.setAvailableSlots(parkingLot.getAvailableSlots() - 1);
             parkingRepository.save(parkingLot);
@@ -116,6 +121,10 @@ public class BookingService {
         if (slot != null) {
             slot.setStatus("AVAILABLE");
             slotRepository.save(slot);
+            com.parkease.api.websocket.SlotStatusWebSocketHandler.broadcast(String.format(
+                "{\"type\":\"SLOT_UPDATE\",\"slotId\":%d,\"parkingLotId\":%d,\"slotNumber\":\"%s\",\"newStatus\":\"AVAILABLE\"}",
+                slot.getId(), booking.getParkingLot().getId(), slot.getSlotNumber()
+            ));
         }
 
         ParkingLot lot = booking.getParkingLot();
